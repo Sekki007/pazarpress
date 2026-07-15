@@ -484,6 +484,7 @@ $sport = cache_remember('home:sport', 120, static fn () => ArticleRepository::ge
 $diaspora = cache_remember('home:diaspora', 120, static fn () => ArticleRepository::getByCategory('dijaspora', 4));
 $videos = cache_remember('home:videos', 300, static fn () => ArticleRepository::getLatestVideos(3));
 $poll = cache_remember('home:poll', 60, static fn () => ArticleRepository::getActivePoll());
+$infoStrip = InfoStrip::get();
 
 $feed = array_values(array_filter($latest['items'], static fn ($a) => !$featured || $a['slug'] !== $featured['slug']));
 
@@ -511,4 +512,5 @@ view('home', [
     'diaspora' => $diaspora,
     'videos' => $videos,
     'poll' => $poll,
+    'infoStrip' => $infoStrip,
 ]);
