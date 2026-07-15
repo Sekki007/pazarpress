@@ -1,0 +1,24 @@
+{
+  "name": "Pazar Press",
+  "short_name": "Pazar Press",
+  "description": "Lokalni news portal — Grad, našim očima.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7F5F4",
+  "theme_color": "#C8102E",
+  "orientation": "portrait-primary",
+  "lang": "sr",
+  "icons": [
+    {
+      "src": "/assets/img/pazar-press-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/img/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,266 @@
+/* Digitalni meni — striktno mobilni prikaz (app shell) */
+
+:root{
+  --font-display:"Bricolage Grotesque",system-ui,sans-serif;
+  --font-body:Inter,system-ui,sans-serif;
+  --pine:#0e5a48;--pine-tint:#e8f3ef;
+  --ink:#171d1b;--gray:#5c6663;--line:#e3e7e5;
+  --paper:#f7f8f6;--card:#fff;
+  --shadow:0 2px 12px rgba(23,29,27,.06);
+  --rst-topbar-h:52px;
+  --rst-tabbar-h:58px;
+  --rst-app-w:100%;
+}
+.dark{
+  --ink:#e8edeb;--gray:#93a09b;--line:#243430;
+  --paper:#0f1715;--card:#16221e;--pine-tint:#1a2e28;
+  --shadow:0 2px 16px rgba(0,0,0,.35);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html.rst-html{height:100%;background:#111816}
+body.rst-body{margin:0;min-height:100%;font:16px/1.45 var(--font-body);color:var(--ink);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+
+.rst-app{
+  width:var(--rst-app-w);
+  max-width:430px;
+  min-height:100dvh;
+  margin:0 auto;
+  background:var(--paper);
+  position:relative;
+  padding-bottom:calc(var(--rst-tabbar-h) + env(safe-area-inset-bottom) + 12px);
+  box-shadow:0 0 0 1px var(--line),0 12px 48px rgba(0,0,0,.35);
+  overflow-x:hidden;
+}
+@media(max-width:480px){
+  html.rst-html{background:var(--paper)}
+  .rst-app{max-width:none;box-shadow:none}
+}
+
+.rst-flash{position:sticky;top:0;z-index:90;padding:.6rem .85rem;text-align:center;font-weight:600;font-size:.85rem}
+.rst-flash--ok{background:#15803d;color:#fff}
+.rst-flash--err{background:#b91c1c;color:#fff}
+
+.rst-stars{display:inline-flex;align-items:center;gap:.1rem;font-size:.8rem}
+.rst-stars__s{color:#d1d5db}
+.rst-stars__s--on{color:#f59e0b}
+.rst-stars__num{font-weight:700;margin-left:.2rem}
+
+/* Top bar */
+.rst-topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:.5rem;
+  height:calc(var(--rst-topbar-h) + env(safe-area-inset-top));
+  padding:env(safe-area-inset-top) .75rem 0;
+  background:color-mix(in srgb,var(--card) 94%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.rst-topbar__btn{
+  flex-shrink:0;width:44px;height:44px;border:none;border-radius:12px;
+  background:var(--paper);color:var(--ink);font-size:1.15rem;
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;
+}
+.rst-topbar__title{
+  flex:1;margin:0;font:800 1rem/1.2 var(--font-display);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;
+}
+
+/* Tab ekrani — jedan aktivan, kao QR meni app */
+.rst-screens{position:relative}
+.rst-screen{display:none}
+.rst-screen--active{display:block}
+#rst-screens[data-active="menu"] ~ .rst-footer{display:none}
+
+/* Hero */
+.rst-hero-mini{padding:0 0 .5rem}
+.rst-hero-mini__cover{height:120px;background:center/cover no-repeat;background-color:#103e33}
+.rst-hero-mini__body{display:flex;gap:.75rem;align-items:flex-start;padding:.65rem 1rem 0;margin-top:-28px}
+.rst-hero-mini__logo{
+  width:56px;height:56px;border-radius:14px;border:3px solid var(--card);
+  object-fit:cover;box-shadow:var(--shadow);background:var(--card);flex-shrink:0;
+}
+.rst-hero-mini__meta{min-width:0;padding-top:.35rem}
+.rst-hero-mini__city{margin:0 0 .2rem;font-size:.82rem;color:var(--gray);font-weight:600}
+.rst-hero-mini__stat{margin:.25rem 0 0;font-size:.75rem;color:var(--gray);font-weight:600}
+.rst-hero-mini__open{margin:.3rem 0 0;font-size:.78rem;color:var(--pine);font-weight:600}
+.rst-hero-mini__desc{margin:.5rem 1rem 0;font-size:.88rem;line-height:1.5;color:var(--gray)}
+
+/* Sticky menu nav */
+.rst-sticky-top{
+  position:sticky;top:calc(var(--rst-topbar-h) + env(safe-area-inset-top));
+  z-index:40;
+  background:color-mix(in srgb,var(--card) 96%,transparent);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.rst-lang-bar{padding:.4rem 1rem;border-bottom:1px solid var(--line)}
+.rst-lang-bar__pills{display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.rst-lang-bar__pills::-webkit-scrollbar{display:none}
+.rst-lang-bar__pill{
+  flex-shrink:0;min-width:48px;min-height:36px;padding:0 .85rem;border-radius:999px;
+  border:1px solid var(--line);font-size:.78rem;font-weight:800;color:var(--ink);
+  display:inline-flex;align-items:center;justify-content:center;text-decoration:none;
+}
+.rst-lang-bar__pill--active{background:var(--pine);color:#fff;border-color:var(--pine)}
+
+.rst-cat-nav__inner{
+  display:flex;gap:.35rem;overflow-x:auto;padding:.45rem 1rem;
+  scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.rst-cat-nav__inner::-webkit-scrollbar{display:none}
+.rst-cat-nav__link{
+  flex-shrink:0;scroll-snap-align:start;min-height:38px;padding:0 .9rem;border-radius:999px;
+  border:1px solid var(--line);font-size:.8rem;font-weight:700;white-space:nowrap;
+  color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;
+}
+.rst-cat-nav__link--active{background:var(--pine);color:#fff;border-color:var(--pine)}
+
+/* Menu list */
+.rst-menu{padding:.5rem 1rem 1rem}
+.rst-menu__empty{color:var(--gray);text-align:center;padding:2rem 0}
+#cat-top{scroll-margin-top:calc(var(--rst-topbar-h) + 90px);height:0}
+.rst-menu__section{margin-bottom:1.25rem}
+.rst-menu__cat{
+  margin:0 0 .5rem;font:800 1.05rem var(--font-display);color:var(--pine);
+  scroll-margin-top:calc(var(--rst-topbar-h) + 88px);
+}
+.rst-menu__list{display:flex;flex-direction:column}
+
+.rst-dish{
+  display:flex;gap:.65rem;align-items:flex-start;
+  padding:.85rem 0;border-bottom:1px solid var(--line);
+}
+.rst-dish:last-child{border-bottom:none}
+.rst-dish--off{opacity:.55}
+.rst-dish__thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--pine-tint)}
+.rst-dish__content{flex:1;min-width:0}
+.rst-dish__row{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem}
+.rst-dish__name{margin:0;font:700 1rem/1.25 var(--font-display);flex:1}
+.rst-dish__price{
+  font:800 .92rem var(--font-display);color:var(--pine);white-space:nowrap;
+  padding:.15rem .5rem;border-radius:8px;background:var(--pine-tint);
+}
+.rst-dish__desc{margin:.3rem 0 0;font-size:.84rem;color:var(--gray);line-height:1.45}
+.rst-dish__tags{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.35rem}
+.rst-chip{font-size:.68rem;font-weight:700;padding:.15rem .45rem;border-radius:6px;background:var(--pine-tint);color:var(--pine)}
+.rst-dish__badge{display:inline-block;margin-top:.35rem;font-size:.7rem;font-weight:700;color:#b45309}
+
+/* Info ekran */
+.rst-info-block{padding:0 1rem 1rem}
+.rst-info-block__title{margin:0 0 .75rem;font:800 1.05rem var(--font-display)}
+.rst-info-block__muted{font-weight:600;color:var(--gray);font-size:.9rem}
+.rst-info-block__today{margin:0 0 .65rem;font-size:.88rem;color:var(--pine);font-weight:600}
+.rst-form__title{margin:0 0 .5rem;font-size:.95rem}
+
+.rst-loc-screen{padding:1rem}
+.rst-loc-screen__map{border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
+.rst-loc-screen__map iframe{display:block;width:100%;height:min(52vh,360px);border:0}
+.rst-loc-screen__addr{margin:1rem 0 .25rem;font-size:1rem;font-weight:700;line-height:1.4}
+.rst-loc-screen__city{margin:0 0 1rem;font-size:.88rem;color:var(--gray)}
+.rst-loc-screen__actions,.rst-loc-screen__contact{display:flex;flex-direction:column;gap:.5rem}
+.rst-loc-screen__contact{margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--line)}
+
+.rst-hours{margin:0}
+.rst-hours--card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:.5rem 1rem;box-shadow:var(--shadow)}
+.rst-hours__row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.rst-hours__row:last-child{border-bottom:none}
+.rst-hours__row--today{background:var(--pine-tint);margin:0 -.5rem;padding:.5rem;border-radius:8px;font-weight:700}
+.rst-hours__row dt{margin:0;font-weight:600}
+.rst-hours__row dd{margin:0;color:var(--gray);font-weight:600}
+
+.rst-reviews{margin:0 0 1rem;padding:0;list-style:none}
+.rst-review{padding:.75rem 0;border-bottom:1px solid var(--line)}
+.rst-review:last-child{border-bottom:none}
+.rst-review__head{display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem}
+.rst-review__body{margin:0;font-size:.88rem;line-height:1.5}
+.rst-reviews__empty{color:var(--gray);font-size:.88rem;margin:0 0 1rem}
+
+.rst-form{display:flex;flex-direction:column;gap:.5rem}
+.rst-field{display:flex;flex-direction:column;gap:.25rem;font-size:.82rem;font-weight:600}
+.rst-input{
+  width:100%;padding:.7rem .85rem;border:1px solid var(--line);border-radius:12px;
+  background:var(--paper);color:var(--ink);font:inherit;font-weight:400;
+}
+.rst-form__hint{margin:.25rem 0 0;font-size:.72rem;color:var(--gray);font-weight:400}
+
+.rst-btn{
+  display:inline-flex;align-items:center;justify-content:center;min-height:48px;
+  padding:0 1rem;border-radius:12px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink);font-weight:700;font-size:.88rem;
+  text-decoration:none;cursor:pointer;font-family:inherit;
+}
+.rst-btn--primary{background:var(--pine);color:#fff;border-color:var(--pine)}
+.rst-btn--block{width:100%}
+
+.rst-share-row{padding:0 1rem 1rem}
+.rst-footer{text-align:center;padding:.5rem 1rem 1rem;font-size:.78rem;color:var(--gray)}
+.rst-footer a{color:var(--pine);font-weight:600;text-decoration:none}
+
+/* Bottom tab bar — uvijek vidljiva */
+.rst-tabbar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;z-index:60;
+  display:flex;align-items:stretch;
+  padding-bottom:env(safe-area-inset-bottom);
+  background:color-mix(in srgb,var(--card) 97%,transparent);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);
+  box-shadow:0 -4px 24px rgba(23,29,27,.08);
+}
+@media(max-width:480px){
+  .rst-tabbar{left:0;transform:none;max-width:none}
+}
+.rst-tabbar__item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:.1rem;min-height:var(--rst-tabbar-h);padding:.25rem .15rem;
+  border:none;background:transparent;color:var(--gray);
+  font-size:.62rem;font-weight:700;text-decoration:none;cursor:pointer;font-family:inherit;
+}
+.rst-tabbar__item--active{color:var(--pine)}
+.rst-tabbar__icon{font-size:1.2rem;line-height:1}
+
+/* Directory list (/restorani) */
+.rst-dir-intro{padding:1rem}
+.rst-dir-intro__sub{margin:0 0 .75rem;color:var(--gray);font-size:.88rem}
+.rst-city-scroll{
+  display:flex;gap:.4rem;overflow-x:auto;padding:0 1rem .75rem;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.rst-city-scroll::-webkit-scrollbar{display:none}
+.rst-city-chip{
+  flex-shrink:0;min-height:38px;padding:0 .9rem;border-radius:999px;
+  border:1px solid var(--line);font-size:.8rem;font-weight:700;
+  color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;
+  background:var(--card);
+}
+.rst-city-chip--on{background:var(--pine);color:#fff;border-color:var(--pine)}
+
+.rst-dir-list{padding:0 1rem 1rem;display:flex;flex-direction:column;gap:.65rem}
+.rst-dir-empty{color:var(--gray);text-align:center;padding:2rem 0;font-size:.92rem}
+.rst-dir-empty a{color:var(--pine);font-weight:600}
+.rst-dir-card{
+  display:block;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:var(--shadow);
+}
+.rst-dir-card__cover{height:100px;background:center/cover no-repeat;background-color:var(--pine-tint)}
+.rst-dir-card__body{display:flex;align-items:center;gap:.65rem;padding:.75rem}
+.rst-dir-card__logo{width:48px;height:48px;border-radius:12px;object-fit:cover;border:1px solid var(--line);flex-shrink:0}
+.rst-dir-card__info{flex:1;min-width:0}
+.rst-dir-card__name{margin:0 0 .15rem;font:700 1rem var(--font-display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rst-dir-card__meta{margin:0 0 .2rem;font-size:.78rem;color:var(--gray)}
+.rst-dir-card__arrow{font-size:1.4rem;color:var(--gray);flex-shrink:0}
+
+/* Portal widget (ostaje kompatibilno) */
+.rst-widget-scroll{display:flex;gap:.75rem;overflow-x:auto;padding-bottom:.5rem}
+.rst-widget-card{flex:0 0 min(72vw,220px);display:block;background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);padding-bottom:.65rem}
+.rst-widget-card__img{aspect-ratio:16/10;background:center/cover no-repeat;background-color:var(--pine-tint)}
+.rst-widget-card__name{display:block;padding:.55rem .65rem .2rem;font:700 .9rem var(--font-display)}
+.rst-widget-cta{font-size:.85rem;margin:0 0 1rem}
+.rst-widget-cta a{color:var(--pine);font-weight:600}
+
+/* Admin forms (vlasnik/admin panel koristi iste klase) */
+.admin-fieldset{border:1px solid var(--line);border-radius:12px;padding:1rem;margin:1rem 0}
+.admin-fieldset legend{font-weight:700;padding:0 .35rem}
+.admin-i18n-block{margin-top:.75rem;padding-top:.75rem;border-top:1px dashed var(--line)}
+.admin-i18n-block strong{display:block;margin-bottom:.5rem;font-size:.9rem}

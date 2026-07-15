@@ -1,0 +1,1 @@
+-- Kolone se dodaju kroz migrate.php (ALTER) zbog SQLite kompatibilnosti.

@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS auto_vesti_settings (
+    settingKey TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
