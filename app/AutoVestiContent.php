@@ -15,6 +15,100 @@ final class AutoVestiContent
         return false;
     }
 
+    /**
+     * Predloži rubriku iz naslova/uvoda/teksta (+ opcioni AI predlog).
+     * Vraća slug ili null ako nema dovoljno jak signal.
+     */
+    public static function detectCategorySlug(
+        string $title,
+        string $lead = '',
+        string $body = '',
+        ?string $aiSuggestion = null
+    ): ?string {
+        $titleL = mb_strtolower($title, 'UTF-8');
+        $leadL = mb_strtolower($lead, 'UTF-8');
+        $bodyL = mb_strtolower(mb_substr(strip_tags($body), 0, 4000, 'UTF-8'), 'UTF-8');
+
+        $scores = [];
+        foreach (AutoVestiConfig::CATEGORY_KEYWORDS as $slug => $keywords) {
+            $score = 0;
+            foreach ($keywords as $kw) {
+                $kw = mb_strtolower($kw, 'UTF-8');
+                if ($kw === '') {
+                    continue;
+                }
+                if (mb_strpos($titleL, $kw) !== false) {
+                    $score += 4;
+                }
+                if ($leadL !== '' && mb_strpos($leadL, $kw) !== false) {
+                    $score += 2;
+                }
+                if ($bodyL !== '' && mb_strpos($bodyL, $kw) !== false) {
+                    $score += 1;
+                }
+            }
+            if ($score > 0) {
+                $scores[$slug] = $score;
+            }
+        }
+
+        arsort($scores);
+        $bestSlug = $scores ? (string) array_key_first($scores) : null;
+        $bestScore = $bestSlug !== null ? (int) $scores[$bestSlug] : 0;
+
+        // Dovoljno jak signal: bar jedan pogodak u naslovu ili više slabijih
+        if ($bestSlug !== null && $bestScore >= 4) {
+            return $bestSlug;
+        }
+
+        $fromAi = self::normalizeCategorySuggestion($aiSuggestion);
+        if ($fromAi !== null) {
+            return $fromAi;
+        }
+
+        if ($bestSlug !== null && $bestScore >= 3) {
+            return $bestSlug;
+        }
+
+        return null;
+    }
+
+    public static function normalizeCategorySuggestion(?string $suggestion): ?string
+    {
+        if ($suggestion === null) {
+            return null;
+        }
+        $s = mb_strtolower(trim($suggestion), 'UTF-8');
+        if ($s === '') {
+            return null;
+        }
+        $map = [
+            'vijesti' => 'vijesti', 'vesti' => 'vijesti', 'news' => 'vijesti',
+            'hronika' => 'hronika', 'hronike' => 'hronika', 'crna hronika' => 'hronika', 'crime' => 'hronika',
+            'politika' => 'politika', 'politics' => 'politika',
+            'društvo' => 'drustvo', 'drustvo' => 'drustvo', 'society' => 'drustvo',
+            'ekonomija' => 'ekonomija', 'economy' => 'ekonomija', 'biznis' => 'ekonomija',
+            'sport' => 'sport', 'sportovi' => 'sport',
+            'kultura' => 'kultura', 'culture' => 'kultura',
+            'dijaspora' => 'dijaspora', 'diaspora' => 'dijaspora',
+            'video' => 'video',
+        ];
+        if (isset($map[$s])) {
+            return $map[$s];
+        }
+        foreach ($map as $label => $slug) {
+            if (mb_strpos($s, $label) !== false) {
+                return $slug;
+            }
+        }
+        foreach (CATEGORIES as $cat) {
+            if ($cat['slug'] === $s || mb_strtolower($cat['name'], 'UTF-8') === $s) {
+                return $cat['slug'];
+            }
+        }
+        return null;
+    }
+
     /** @param array<int, array{q?:string,a?:string}> $faqItems */
     public static function buildFaqBlock(array $faqItems): string
     {

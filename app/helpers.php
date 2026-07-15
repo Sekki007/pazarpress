@@ -40,6 +40,10 @@ function view(string $template, array $data = [], ?string $layout = 'layout'): v
     ob_start();
     require __DIR__ . '/../views/' . $template . '.php';
     $content = ob_get_clean();
+    // foreach u šablonima ostavlja $article — ne sme da “zarazi” OG meta u layoutu
+    if (!array_key_exists('article', $data)) {
+        unset($article);
+    }
     if ($layout) {
         require __DIR__ . '/../views/' . $layout . '.php';
     } else {
@@ -460,7 +464,36 @@ function og_image_url(?string $path): string
     if ($default !== '') {
         return absolute_url($default);
     }
+    $png = __DIR__ . '/../public/assets/img/og-default.png';
+    if (is_file($png)) {
+        return absolute_url('/assets/img/og-default.png');
+    }
     return absolute_url('/assets/img/og-default.svg');
+}
+
+function og_image_mime(string $url): string
+{
+    $path = strtolower(parse_url($url, PHP_URL_PATH) ?: $url);
+    return match (true) {
+        str_ends_with($path, '.png') => 'image/png',
+        str_ends_with($path, '.webp') => 'image/webp',
+        str_ends_with($path, '.gif') => 'image/gif',
+        str_ends_with($path, '.svg') => 'image/svg+xml',
+        default => 'image/jpeg',
+    };
+}
+
+/** ISO-8601 za Open Graph / JSON-LD. */
+function og_datetime(?string $value): string
+{
+    if ($value === null || trim($value) === '') {
+        return '';
+    }
+    $ts = strtotime($value);
+    if ($ts === false) {
+        return $value;
+    }
+    return gmdate('c', $ts);
 }
 
 function breadcrumb_json_ld(array $breadcrumbs): array

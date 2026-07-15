@@ -218,6 +218,8 @@ a.chip:hover{background:var(--pine);color:#fff}
 .input{width:100%;padding:.6rem .75rem;border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:.5rem}
 .poll-q{font-weight:600;margin-bottom:.5rem}
 .poll-opt{display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.4rem;font-size:.85rem}
+.home-poll-mobile{margin:1.25rem 0 0;padding:1rem 1.1rem;background:var(--surface,#fff);border:1px solid var(--border,rgba(0,0,0,.08));border-radius:14px}
+.home-poll-mobile .widget{margin:0;padding:0;background:transparent;border:none;box-shadow:none}
 .site-footer{background:var(--pine-dark);color:#f0c8cf;padding:2rem 0 calc(2rem + var(--bottom-nav-h) + env(safe-area-inset-bottom));margin-top:2.75rem;border-top:none}
 @media(min-width:1024px){.site-footer{padding-bottom:2rem}}
 .site-footer__grid{display:grid;gap:1.75rem 1.25rem;margin-bottom:1.5rem}

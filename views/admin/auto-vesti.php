@@ -358,6 +358,7 @@ $base = '/admin/auto-vesti';
 
 <div class="admin-card" style="margin-top:20px">
   <h2 style="margin-top:0">Feedovi</h2>
+  <p class="admin-hint">Rubrika po feedu je rezervna. Ako naslov/tekst jasno ukazuju na Sport, Politiku, Hroniku itd., Auto-vesti automatski dodeljuju tu rubriku.</p>
   <div id="avc-feeds">
     <?php foreach ($feeds as $i => $row): ?>
     <div class="avc-feed-row" style="display:grid;grid-template-columns:2fr 1fr 1.2fr auto auto;gap:8px;margin-bottom:8px;align-items:center;padding:8px;background:#f9fafb;border-radius:6px">

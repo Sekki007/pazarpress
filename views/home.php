@@ -65,6 +65,12 @@
       <button type="button" class="btn-load-more" id="btn-load-more">Učitaj još</button>
     </section>
 
+    <?php if ($poll): ?>
+    <div class="home-poll-mobile hide-desktop">
+      <?php include __DIR__ . '/partials/poll-widget.php'; ?>
+    </div>
+    <?php endif; ?>
+
     <?php if ($videos): ?>
     <div class="section-head"><h2>Video</h2><a href="/video">Svi →</a></div>
     <div class="video-strip">

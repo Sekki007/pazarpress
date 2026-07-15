@@ -47,9 +47,34 @@ if ($uri === '/api/poll/vote' && $method === 'POST') {
         json_response(['error' => 'Previše pokušaja.'], 429);
     }
     $input = json_decode((string) file_get_contents('php://input'), true) ?: $_POST;
-    $optionId = (string) ($input['optionId'] ?? '');
+    $optionId = trim((string) ($input['optionId'] ?? ''));
+    if ($optionId === '') {
+        json_response(['error' => 'Izaberite opciju.'], 400);
+    }
     $ipHash = hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . ($_SERVER['HTTP_USER_AGENT'] ?? ''));
     $pdo = Database::connection();
+
+    $opt = $pdo->prepare(
+        'SELECT po.id, po.pollId FROM poll_options po
+         JOIN polls p ON p.id = po.pollId
+         WHERE po.id = ? AND p.active = 1 LIMIT 1'
+    );
+    $opt->execute([$optionId]);
+    $option = $opt->fetch();
+    if (!$option) {
+        json_response(['error' => 'Anketa nije dostupna.'], 400);
+    }
+
+    $already = $pdo->prepare(
+        'SELECT 1 FROM poll_votes pv
+         JOIN poll_options po ON po.id = pv.pollOptionId
+         WHERE po.pollId = ? AND pv.ipHash = ? LIMIT 1'
+    );
+    $already->execute([(string) $option['pollId'], $ipHash]);
+    if ($already->fetchColumn()) {
+        json_response(['error' => 'Već ste glasali.'], 400);
+    }
+
     try {
         $pdo->prepare('INSERT INTO poll_votes (id, pollOptionId, ipHash) VALUES (?, ?, ?)')
             ->execute([new_id(), $optionId, $ipHash]);

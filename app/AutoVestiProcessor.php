@@ -608,6 +608,31 @@ final class AutoVestiProcessor
         ];
     }
 
+    /**
+     * Preferira sadržaj (ključne reči / AI predlog), pa eksplicitnu rubriku feeda/Telegrama.
+     *
+     * @param array<string,mixed> $data
+     */
+    private static function resolveAutoCategory(string $preferred, array $data): string
+    {
+        $title = (string) ($data['title'] ?? '');
+        $lead = (string) ($data['excerpt'] ?? $data['meta_description'] ?? '');
+        $body = (string) ($data['content'] ?? '');
+        $ai = isset($data['suggested_category']) ? (string) $data['suggested_category'] : null;
+
+        $detected = AutoVestiContent::detectCategorySlug($title, $lead, $body, $ai);
+        if ($detected !== null) {
+            AutoVestiConfig::log(
+                'Auto-rubrika: ' . $detected
+                . ($preferred !== '' && $preferred !== $detected ? ' (feed bio: ' . $preferred . ')' : '')
+                . ' — ' . mb_substr($title, 0, 90, 'UTF-8')
+            );
+            return $detected;
+        }
+
+        return $preferred;
+    }
+
     /** @param array<string,mixed> $data @param array<string,mixed> $original */
     public static function createArticle(
         array $data,
@@ -657,14 +682,19 @@ final class AutoVestiProcessor
         }
 
         $pdo = Database::connection();
+        $categoryId = self::resolveAutoCategory($categoryId, $data);
         if ($categoryId === '') {
-            $categoryId = (string) $pdo->query('SELECT id FROM categories ORDER BY name LIMIT 1')->fetchColumn();
+            $categoryId = 'vijesti';
+        }
+        $stmt = $pdo->prepare('SELECT id FROM categories WHERE id = ? OR slug = ? LIMIT 1');
+        $stmt->execute([$categoryId, $categoryId]);
+        $found = $stmt->fetchColumn();
+        if ($found) {
+            $categoryId = (string) $found;
         } else {
-            $stmt = $pdo->prepare('SELECT id FROM categories WHERE id = ? OR slug = ? LIMIT 1');
-            $stmt->execute([$categoryId, $categoryId]);
-            $found = $stmt->fetchColumn();
-            if ($found) {
-                $categoryId = (string) $found;
+            $categoryId = (string) $pdo->query("SELECT id FROM categories WHERE slug = 'vijesti' LIMIT 1")->fetchColumn();
+            if ($categoryId === '') {
+                $categoryId = (string) $pdo->query('SELECT id FROM categories ORDER BY name LIMIT 1')->fetchColumn();
             }
         }
 

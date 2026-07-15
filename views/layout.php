@@ -25,24 +25,37 @@
   <?php endif; ?>
   <link rel="alternate" type="application/rss+xml" title="Pazar Press RSS" href="<?= e(absolute_url('/feed.xml')) ?>">
   <link rel="manifest" href="/manifest.json">
+  <?php
+    $pageTitle = $title ?? 'Pazar Press';
+    $pageDesc = $description ?? site_meta_description();
+    $pageOgType = $ogType ?? 'website';
+    $ogImg = $ogImage ?? og_image_url(null);
+    $ogImgAlt = $ogImageAlt ?? ($pageTitle . ' — ' . config('site_name'));
+  ?>
   <meta property="og:locale" content="sr_RS">
   <meta property="og:site_name" content="<?= e(config('site_name')) ?>">
-  <meta property="og:title" content="<?= e($title ?? 'Pazar Press') ?>">
-  <meta property="og:description" content="<?= e($description ?? '') ?>">
-  <meta property="og:type" content="<?= e($ogType ?? (!empty($article) ? 'article' : 'website')) ?>">
+  <meta property="og:title" content="<?= e($pageTitle) ?>">
+  <meta property="og:description" content="<?= e($pageDesc) ?>">
+  <meta property="og:type" content="<?= e($pageOgType) ?>">
   <?php if (!empty($canonical)): ?>
   <meta property="og:url" content="<?= e($canonical) ?>">
   <?php endif; ?>
-  <?php $ogImg = $ogImage ?? og_image_url(null); ?>
   <meta property="og:image" content="<?= e($ogImg) ?>">
+  <meta property="og:image:secure_url" content="<?= e($ogImg) ?>">
+  <meta property="og:image:type" content="<?= e(og_image_mime($ogImg)) ?>">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="<?= e($ogImgAlt) ?>">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="<?= e($title ?? 'Pazar Press') ?>">
-  <meta name="twitter:description" content="<?= e($description ?? '') ?>">
+  <meta name="twitter:title" content="<?= e($pageTitle) ?>">
+  <meta name="twitter:description" content="<?= e($pageDesc) ?>">
   <meta name="twitter:image" content="<?= e($ogImg) ?>">
-  <?php if (!empty($article)): ?>
-  <meta property="article:published_time" content="<?= e($article['publishedAt'] ?? '') ?>">
+  <meta name="twitter:image:alt" content="<?= e($ogImgAlt) ?>">
+  <?php if ($pageOgType === 'article' && !empty($article)): ?>
+  <meta property="article:published_time" content="<?= e(og_datetime($article['publishedAt'] ?? null)) ?>">
+  <?php if (!empty($article['updatedAt'])): ?>
+  <meta property="article:modified_time" content="<?= e(og_datetime($article['updatedAt'])) ?>">
+  <?php endif; ?>
   <meta property="article:author" content="<?= e($article['author']['name'] ?? $article['authorName'] ?? '') ?>">
   <meta property="article:section" content="<?= e($article['category']['name'] ?? '') ?>">
   <?php endif; ?>

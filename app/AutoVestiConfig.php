@@ -47,6 +47,59 @@ final class AutoVestiConfig
         'smrt', 'ubojstvo', 'uhapsen', 'poginuo', 'eksplozija', 'pozar', 'nesreca',
     ];
 
+    /**
+     * Ključne reči za automatsko dodeljivanje rubrike (slug → keywords).
+     * Veći skor = jači signal; title/lead vredi više od body-ja.
+     *
+     * @var array<string, list<string>>
+     */
+    public const CATEGORY_KEYWORDS = [
+        'sport' => [
+            'fudbal', 'nogomet', 'košark', 'kosark', 'odbojk', 'rukomet', 'tenis',
+            'utakmic', 'prvenstv', 'liga ', ' lige', 'gol ', 'gole ', 'igrač', 'igrac',
+            'trener', 'olimpij', 'fifa', 'uefa', 'fk ', 'kk ', 'atletik', 'skijan',
+            'meč', 'mec ', 'derbi', 'sportsk', 'superliga', 'premijer', 'rezultat utak',
+            'transfer', 'kapiten', 'stadion', 'navijač', 'navijac', 'penal', 'korner',
+        ],
+        'politika' => [
+            'vlada', 'skupštin', 'skupstin', 'ministar', 'predsednik', 'predsjednik',
+            'partij', 'izbori', 'izborn', 'koalicij', 'opozicij', 'poslanik', 'odbornik',
+            'politič', 'politic', 'demokratsk', 'referendum', 'kampanj', 'mandat',
+            'amandman', 'parlament', 'vlade', 'premijer', 'gradonačelnik', 'gradonacelnik',
+            'sdp', 'sns', 'sps', 'ds ', 'stranka', 'stranke', 'kandidat',
+        ],
+        'hronika' => [
+            'ubistv', 'ubojstv', 'nesreć', 'nesrec', 'sudar', 'požar', 'pozar',
+            'krađ', 'kradj', 'policij', 'uhapšen', 'uhapsen', 'hapšenj', 'hapsenj',
+            'saobraćaj', 'saobracaj', 'incident', 'eksplozij', 'ranjen', 'preminuo',
+            'poginuo', 'mrtav', 'krivič', 'krivic', 'tužilašt', 'tuzilast', 'pretres',
+            'droga', 'narkotik', 'oružj', 'oruzj', 'pucanj', 'pucnjav', 'maltretir',
+            'nasilj', 'pljačk', 'pljack', 'krađa', 'krada', 'povređen', 'povredjen',
+        ],
+        'ekonomija' => [
+            'privred', 'investicij', 'budžet', 'budzet', 'inflacij', 'zaposlen',
+            'nezaposlen', 'preduzeć', 'preduzec', 'firma ', 'banka', 'kredit',
+            'porez', 'tržišt', 'trzist', 'ekonomij', 'plata', 'plate ', 'eur ',
+            'dinar', 'kurs ', 'berza', 'privrednik', 'preduzetnik', 'poslodavac',
+        ],
+        'kultura' => [
+            'festival', 'pozorišt', 'pozorist', 'koncert', 'izložb', 'izlozb',
+            'muzej', 'knjig', 'roman ', 'pesnik', 'umetnost', 'umjetnost', 'kulturn',
+            'film ', 'filma', 'glumac', 'glumic', 'pevač', 'pjevac', 'pevac',
+            'muzič', 'muzic', 'galerij', 'predstav', 'balet', 'opera',
+        ],
+        'dijaspora' => [
+            'dijaspor', 'inostranstv', 'emigr', 'iseljen', 'gastarbajter',
+            'švajcar', 'svajcar', 'nemačk', 'nemack', 'austrij', 'dijaspora',
+            'radnici u inostr', 'naši u ', 'nasi u ',
+        ],
+        'drustvo' => [
+            'škola', 'skola', 'obrazovanj', 'bolnic', 'zdravstv', 'pacijen',
+            'studen', 'univerzitet', 'vrtić', 'vrtic', 'socijaln', 'penzij',
+            'građan', 'gradjan', 'lokalna zajednic',
+        ],
+    ];
+
     public static function defaults(): array
     {
         return [
