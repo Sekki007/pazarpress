@@ -1,9 +1,11 @@
-const CACHE = "pazarpress-v1";
+const CACHE = "pazarpress-v2";
 const PRECACHE = [
   "/assets/css/site.css",
   "/assets/js/site.js",
   "/assets/js/theme.js",
+  "/assets/js/reader-tools.js",
   "/assets/img/icon.svg",
+  "/manifest.json",
 ];
 
 function isStaticAsset(pathname) {

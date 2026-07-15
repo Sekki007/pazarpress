@@ -127,6 +127,19 @@ if ($uri === '/pretraga') {
     exit;
 }
 
+if ($uri === '/sacuvano') {
+    $infoStrip = InfoStrip::get();
+    view('sacuvano', [
+        'title' => 'Sačuvano — Pazar Press',
+        'description' => 'Sačuvane vijesti i istorija čitanja na Pazar Press.',
+        'noindex' => true,
+        'canonical' => config('site_url') . '/sacuvano',
+        'infoStrip' => $infoStrip,
+        'navActive' => 'saved',
+    ]);
+    exit;
+}
+
 if ($uri === '/video') {
     $page = max(1, (int) ($_GET['str'] ?? 1));
     $data = ArticleRepository::getVideosPage($page);
@@ -271,8 +284,13 @@ if (preg_match('#^/vijest/([^/]+)$#', $uri, $m)) {
     }
     ArticleRepository::incrementViews($article['id']);
     $related = ArticleRepository::getRelated($article['categorySlug'], $article['id']);
+    $nextArticle = ArticleRepository::getNextArticle(
+        (string) ($article['publishedAt'] ?? $article['createdAt'] ?? ''),
+        (string) $article['id']
+    );
     $comments = ArticleRepository::getApprovedComments($article['id']);
     $canonical = config('site_url') . '/vijest/' . $article['slug'];
+    $metaDesc = !empty($article['seoDescription']) ? $article['seoDescription'] : $article['lead'];
     $breadcrumbs = [
         ['label' => 'Početna', 'url' => '/'],
         ['label' => $article['category']['name'], 'url' => '/rubrika/' . $article['category']['slug']],
@@ -309,13 +327,13 @@ if (preg_match('#^/vijest/([^/]+)$#', $uri, $m)) {
     $pageTitle = !empty($article['seoTitle'])
         ? $article['seoTitle'] . ' — Pazar Press'
         : $article['title'] . ' — Pazar Press';
-    $metaDesc = !empty($article['seoDescription']) ? $article['seoDescription'] : $article['lead'];
 
     view('article', [
         'title' => $pageTitle,
         'description' => $metaDesc,
         'article' => $article,
         'related' => $related,
+        'nextArticle' => $nextArticle,
         'comments' => $comments,
         'canonical' => $canonical,
         'ogImage' => og_image_url($article['coverImage'] ?? null),
@@ -462,8 +480,13 @@ $latestSidebar = cache_remember('home:latest-sidebar', 90, static function () us
     }
     return array_slice($items, 0, 5);
 });
+$flashNews = cache_remember(
+    'home:flash:' . ($city ?? 'all') . ':' . ($featured['slug'] ?? ''),
+    90,
+    static fn () => ArticleRepository::getFlashHighlights($city, 4, $featured['slug'] ?? null)
+);
 $sport = cache_remember('home:sport', 120, static fn () => ArticleRepository::getByCategory('sport', 4));
-$diaspora = cache_remember('home:diaspora', 120, static fn () => ArticleRepository::getByCategory('diaspora', 4));
+$diaspora = cache_remember('home:diaspora', 120, static fn () => ArticleRepository::getByCategory('dijaspora', 4));
 $videos = cache_remember('home:videos', 300, static fn () => ArticleRepository::getLatestVideos(3));
 $poll = cache_remember('home:poll', 60, static fn () => ArticleRepository::getActivePoll());
 $infoStrip = InfoStrip::get();
@@ -474,6 +497,8 @@ $homeRestaurants = restaurants_enabled()
     : [];
 
 $feed = array_values(array_filter($latest['items'], static fn ($a) => !$featured || $a['slug'] !== $featured['slug']));
+$highlights = array_slice($feed, 0, 3);
+$feedRest = array_slice($feed, 3);
 
 $homeCanonical = config('site_url') . '/';
 if ($citySlug) {
@@ -493,7 +518,9 @@ view('home', [
     'city' => $city,
     'featured' => $featured,
     'breaking' => $breaking,
-    'feed' => $feed,
+    'flashNews' => $flashNews,
+    'highlights' => $highlights,
+    'feed' => $feedRest,
     'feedCursor' => $latest['nextCursor'],
     'latestSidebar' => $latestSidebar,
     'sport' => $sport,

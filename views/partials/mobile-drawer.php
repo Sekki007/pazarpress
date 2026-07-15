@@ -14,6 +14,7 @@
     <?php foreach (CATEGORIES as $cat): ?>
     <a href="/rubrika/<?= e($cat['slug']) ?>" class="mobile-drawer__link"><?= e($cat['name']) ?></a>
     <?php endforeach; ?>
+    <a href="/sacuvano" class="mobile-drawer__link">Sačuvano</a>
     <a href="/pretraga" class="mobile-drawer__link">Pretraga</a>
     <a href="/video" class="mobile-drawer__link">Video</a>
   </nav>

@@ -281,6 +281,19 @@ final class ArticleRepository
         return array_map([self::class, 'mapRow'], $stmt->fetchAll());
     }
 
+    /** Sledeća (starija) objavljena vest za čitalački tok. */
+    public static function getNextArticle(string $publishedAt, string $excludeId): ?array
+    {
+        $pdo = Database::connection();
+        $stmt = $pdo->prepare(
+            self::baseSelect() . " WHERE a.status = 'PUBLISHED' AND a.id != ?
+                AND a.publishedAt < ? ORDER BY a.publishedAt DESC LIMIT 1"
+        );
+        $stmt->execute([$excludeId, $publishedAt]);
+        $row = $stmt->fetch();
+        return $row ? self::mapRow($row) : null;
+    }
+
     public static function getLatestVideos(int $limit = 3): array
     {
         $pdo = Database::connection();

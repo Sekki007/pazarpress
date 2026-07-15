@@ -86,7 +86,7 @@
     });
   });
 
-  document.getElementById("newsletter-form")?.addEventListener("submit", async function (e) {
+  async function submitNewsletter(e) {
     e.preventDefault();
     var email = new FormData(e.target).get("email");
     var res = await fetch("/api/newsletter", {
@@ -96,18 +96,23 @@
     });
     var data = await res.json().catch(function () { return {}; });
     alert(data.message || data.error || (res.ok ? "Hvala na prijavi!" : "Greška pri prijavi."));
+  }
+  document.querySelectorAll(".newsletter-form").forEach(function (form) {
+    form.addEventListener("submit", submitNewsletter);
   });
 
-  document.getElementById("poll-form")?.addEventListener("submit", async function (e) {
-    e.preventDefault();
-    var optionId = new FormData(e.target).get("optionId");
-    var res = await fetch("/api/poll/vote", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ optionId: optionId }),
+  document.querySelectorAll(".poll-form").forEach(function (form) {
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var optionId = new FormData(e.target).get("optionId");
+      var res = await fetch("/api/poll/vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ optionId: optionId }),
+      });
+      alert(res.ok ? "Hvala na glasu!" : "Već ste glasali ili greška.");
+      if (res.ok) location.reload();
     });
-    alert(res.ok ? "Hvala na glasu!" : "Već ste glasali ili greška.");
-    if (res.ok) location.reload();
   });
 
   document.querySelectorAll(".avc-faq-item .avc-faq-q").forEach(function (q) {

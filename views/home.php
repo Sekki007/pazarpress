@@ -26,6 +26,11 @@
   </div>
 </div>
 
+<div class="ptr-indicator" id="ptr-indicator" aria-live="polite" hidden>
+  <span class="ptr-indicator__spinner" aria-hidden="true"></span>
+  <span class="ptr-indicator__text">Osveženo upravo</span>
+</div>
+
 <main class="container main-grid">
   <div class="main-col">
     <?php if ($featured): ?>
@@ -54,6 +59,36 @@
     </a>
     <?php endif; ?>
 
+    <?php if (!empty($flashNews)): include __DIR__ . '/partials/flash-news-grid.php'; endif; ?>
+
+    <?php if (!empty($highlights)): ?>
+    <section class="highlights-row" aria-label="Najnovije izdvojeno">
+      <div class="section-head">
+        <h2>U fokusu</h2>
+      </div>
+      <div class="highlights-row__track">
+        <?php foreach ($highlights as $i => $h): ?>
+        <a href="/vijest/<?= e($h['slug']) ?>" class="highlight-card">
+          <div class="highlight-card__media">
+            <?php if (!empty($h['coverImage'])): ?>
+            <?= responsive_image($h['coverImage'], '', [
+                'class' => 'highlight-card__img',
+                'loading' => 'lazy',
+                'sizes' => '160px',
+                'src_variant' => 'sm',
+            ]) ?>
+            <?php else: ?>
+            <span class="highlight-card__ph thumb-<?= ['a','b','c','d'][$i % 4] ?>"></span>
+            <?php endif; ?>
+          </div>
+          <span class="highlight-card__chip"><?= e($h['category']['name'] ?? '') ?></span>
+          <span class="highlight-card__title"><?= e($h['title']) ?></span>
+        </a>
+        <?php endforeach; ?>
+      </div>
+    </section>
+    <?php endif; ?>
+
     <?php if (!empty($latestSidebar)): include __DIR__ . '/partials/latest-news-mobile.php'; endif; ?>
 
     <?php $slot = 'ad_home_html'; include __DIR__ . '/partials/ad-slot.php'; ?>
@@ -71,6 +106,21 @@
       </div>
       </div>
       <button type="button" class="btn-load-more" id="btn-load-more">Učitaj još</button>
+    </section>
+
+    <section class="mobile-extras hide-desktop" aria-label="Dodatno">
+      <?php if ($poll): ?>
+      <div class="mobile-extras__card">
+        <?php include __DIR__ . '/partials/poll-widget.php'; ?>
+      </div>
+      <?php endif; ?>
+      <div class="mobile-extras__card">
+        <h3 class="widget__title">Newsletter</h3>
+        <form class="newsletter-form" id="newsletter-form-mobile">
+          <input type="email" name="email" placeholder="Vaš email" required class="input">
+          <button type="submit" class="btn-primary">Prijavi se</button>
+        </form>
+      </div>
     </section>
 
     <div class="section-head"><h2>Video</h2><a href="/video">Svi prilozi →</a></div>
@@ -107,7 +157,7 @@
     </div>
   </div>
 
-  <aside class="sidebar">
+  <aside class="sidebar hide-mobile">
     <?php if (!empty($latestSidebar)): include __DIR__ . '/partials/latest-news-sidebar.php'; endif; ?>
     <?php if ($poll): include __DIR__ . '/partials/poll-widget.php'; endif; ?>
     <div class="widget widget--fb">

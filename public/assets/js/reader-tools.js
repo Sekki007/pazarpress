@@ -1,17 +1,20 @@
 (function () {
   var READ_KEY = "pazarpress-read-later";
+  var HISTORY_KEY = "pazarpress-history";
   var SCROLL_KEY = "pazarpress-scroll";
+  var FONT_KEY = "pazarpress-font-size";
+  var FONT_STEPS = [15, 17, 19, 21];
 
-  function getList() {
+  function getList(key) {
     try {
-      return JSON.parse(localStorage.getItem(READ_KEY) || "[]");
+      return JSON.parse(localStorage.getItem(key) || "[]");
     } catch (e) {
       return [];
     }
   }
 
-  function setList(list) {
-    localStorage.setItem(READ_KEY, JSON.stringify(list.slice(0, 50)));
+  function setList(key, list, max) {
+    localStorage.setItem(key, JSON.stringify(list.slice(0, max || 50)));
   }
 
   function updateReadLaterBtn() {
@@ -19,7 +22,7 @@
     var article = document.querySelector(".article-page[data-article-slug]");
     if (!btn || !article) return;
     var slug = article.dataset.articleSlug;
-    var saved = getList().some(function (x) {
+    var saved = getList(READ_KEY).some(function (x) {
       return x.slug === slug;
     });
     btn.classList.toggle("is-saved", saved);
@@ -31,22 +34,61 @@
     btn.setAttribute("aria-label", saved ? "Ukloni sa liste za kasnije" : "Sačuvaj za kasnije");
   }
 
+  function trackHistory() {
+    var article = document.querySelector(".article-page[data-article-slug]");
+    if (!article) return;
+    var slug = article.dataset.articleSlug;
+    var title = article.dataset.articleTitle || document.querySelector(".article-title")?.textContent || slug;
+    var cover = article.dataset.articleCover || "";
+    var list = getList(HISTORY_KEY).filter(function (x) {
+      return x.slug !== slug;
+    });
+    list.unshift({ slug: slug, title: title, cover: cover, viewedAt: Date.now() });
+    setList(HISTORY_KEY, list, 40);
+  }
+
+  function applyFontSize(px) {
+    document.documentElement.style.setProperty("--read-size", px + "px");
+    localStorage.setItem(FONT_KEY, String(px));
+  }
+
+  function currentFontIndex() {
+    var saved = parseInt(localStorage.getItem(FONT_KEY) || "17", 10);
+    var idx = FONT_STEPS.indexOf(saved);
+    return idx === -1 ? 1 : idx;
+  }
+
+  document.getElementById("btn-font-up")?.addEventListener("click", function () {
+    var i = Math.min(FONT_STEPS.length - 1, currentFontIndex() + 1);
+    applyFontSize(FONT_STEPS[i]);
+  });
+
+  document.getElementById("btn-font-down")?.addEventListener("click", function () {
+    var i = Math.max(0, currentFontIndex() - 1);
+    applyFontSize(FONT_STEPS[i]);
+  });
+
+  if (document.querySelector(".article-body.serif")) {
+    applyFontSize(FONT_STEPS[currentFontIndex()]);
+  }
+
   document.getElementById("btn-read-later")?.addEventListener("click", function () {
     var article = document.querySelector(".article-page[data-article-slug]");
     if (!article) return;
     var slug = article.dataset.articleSlug;
-    var title = document.querySelector(".article-title")?.textContent || slug;
-    var list = getList();
+    var title = article.dataset.articleTitle || document.querySelector(".article-title")?.textContent || slug;
+    var cover = article.dataset.articleCover || "";
+    var list = getList(READ_KEY);
     var exists = list.some(function (x) {
       return x.slug === slug;
     });
     if (exists) {
-      setList(list.filter(function (x) {
+      setList(READ_KEY, list.filter(function (x) {
         return x.slug !== slug;
       }));
     } else {
-      list.unshift({ slug: slug, title: title, savedAt: Date.now() });
-      setList(list);
+      list.unshift({ slug: slug, title: title, cover: cover, savedAt: Date.now() });
+      setList(READ_KEY, list);
     }
     updateReadLaterBtn();
   });
@@ -116,5 +158,6 @@
     );
   }
 
+  trackHistory();
   updateReadLaterBtn();
 })();

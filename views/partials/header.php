@@ -20,9 +20,15 @@ if (preg_match('#^/rubrika/([^/]+)$#', $path, $navMatch)) {
       <?php endforeach; ?>
     </nav>
     <div class="site-header__actions">
-      <button type="button" class="icon-btn" id="btn-search" aria-label="Pretraga">🔍</button>
-      <button type="button" class="icon-btn hide-desktop" id="btn-menu" aria-label="Meni">☰</button>
-      <button type="button" class="icon-btn" id="btn-theme" aria-label="Tema">🌙</button>
+      <button type="button" class="icon-btn" id="btn-search" aria-label="Pretraga">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      </button>
+      <button type="button" class="icon-btn hide-desktop" id="btn-menu" aria-label="Meni">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <button type="button" class="icon-btn" id="btn-theme" aria-label="Tema">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
+      </button>
     </div>
   </div>
 </header>

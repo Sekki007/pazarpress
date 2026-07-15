@@ -100,9 +100,11 @@
 <?= $content ?? '' ?>
 <?php include __DIR__ . '/partials/search-overlay.php'; ?>
 <?php include __DIR__ . '/partials/mobile-drawer.php'; ?>
+<?php include __DIR__ . '/partials/push-banner.php'; ?>
 <script src="/assets/js/theme.js" defer></script>
 <script src="/assets/js/site.js" defer></script>
 <script src="/assets/js/reader-tools.js" defer></script>
+<script src="/assets/js/push-banner.js" defer></script>
 <?php if (!empty($extraScripts)): foreach ($extraScripts as $s): ?>
 <script src="<?= e($s) ?>" defer></script>
 <?php endforeach; endif; ?>

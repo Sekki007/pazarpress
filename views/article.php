@@ -1,16 +1,24 @@
 <?php if (empty($preview)): include __DIR__ . '/partials/header.php'; endif; ?>
 
-<article class="article-page" data-article-slug="<?= e($article['slug']) ?>">
+<article class="article-page" data-article-slug="<?= e($article['slug']) ?>" data-article-title="<?= e($article['title']) ?>" data-article-cover="<?= e($article['coverImage'] ?? '') ?>">
   <div class="article-progress" id="read-progress"></div>
   <header class="article-header">
     <div class="container article-header__inner">
       <?php if (empty($preview)): ?>
-      <a href="javascript:history.back()" class="icon-btn" aria-label="Nazad">←</a>
+      <a href="javascript:history.back()" class="icon-btn" aria-label="Nazad">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
       <?php else: ?>
       <a href="/admin/clanci" class="icon-btn">← Admin</a>
       <?php endif; ?>
       <a href="/rubrika/<?= e($article['category']['slug']) ?>" class="chip"><?= e($article['category']['name']) ?></a>
-      <button type="button" class="icon-btn" id="btn-theme-article" aria-label="Tema">🌙</button>
+      <div class="article-tools" role="group" aria-label="Veličina teksta">
+        <button type="button" class="icon-btn article-tools__btn" id="btn-font-down" aria-label="Manji tekst">A−</button>
+        <button type="button" class="icon-btn article-tools__btn" id="btn-font-up" aria-label="Veći tekst">A+</button>
+      </div>
+      <button type="button" class="icon-btn" id="btn-theme-article" aria-label="Tema">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
+      </button>
     </div>
   </header>
 
@@ -58,6 +66,14 @@
       <a href="/tag/<?= e($tag['slug']) ?>" class="chip">#<?= e($tag['name']) ?></a>
       <?php endforeach; ?>
     </div>
+    <?php endif; ?>
+
+    <?php if (!empty($nextArticle)): ?>
+    <a href="/vijest/<?= e($nextArticle['slug']) ?>" class="next-article">
+      <span class="next-article__label">Sledeća vest</span>
+      <span class="next-article__title"><?= e($nextArticle['title']) ?></span>
+      <span class="next-article__meta"><?= e($nextArticle['category']['name'] ?? '') ?> · <?= e(format_relative($nextArticle['publishedAt'] ?? null)) ?></span>
+    </a>
     <?php endif; ?>
 
     <?php if (empty($preview)): include __DIR__ . '/partials/comments.php'; endif; ?>
