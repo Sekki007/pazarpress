@@ -755,10 +755,12 @@ function responsive_image(string $url, string $alt = '', array $attrs = []): str
     $base = preg_replace('/\.[^.]+$/', '', $local) ?: $local;
     $srcset = [];
     $variants = [];
-    foreach ([160 => 'sm', 400 => 'thumb', 800 => 'md', 1200 => 'lg'] as $w => $suffix) {
+    foreach (['sm' => 160, 'thumb' => 400, 'md' => 720, 'lg' => 1080] as $suffix => $fallbackW) {
         $variant = $base . '-' . $suffix . '.webp';
         if (is_file($variant)) {
             $rel = '/uploads' . str_replace('\\', '/', substr($variant, strlen($uploadDir)));
+            $info = @getimagesize($variant);
+            $w = (is_array($info) && !empty($info[0])) ? (int) $info[0] : $fallbackW;
             $srcset[] = $rel . ' ' . $w . 'w';
             $variants[$suffix] = $rel;
         }

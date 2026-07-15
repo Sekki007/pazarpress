@@ -25,13 +25,13 @@ final class ImageProcessor
         }
 
         $base = preg_replace('/\.[^.]+$/', '', $filePath) ?: $filePath;
-        foreach ([160 => 'sm', 400 => 'thumb', 800 => 'md', 1200 => 'lg'] as $width => $suffix) {
+        foreach ([160 => 'sm', 400 => 'thumb', 720 => 'md', 1080 => 'lg'] as $width => $suffix) {
             $out = $base . '-' . $suffix . '.webp';
             $quality = match ($suffix) {
-                'sm' => 68,
-                'thumb' => 72,
-                'md' => 78,
-                default => 82,
+                'sm' => 60,
+                'thumb' => 66,
+                'md' => 70,
+                default => 74,
             };
             if (self::saveResizedWebp($image, $filePath, $out, $width, $quality)) {
                 $variants[$width] = self::publicUrl($out);
@@ -81,5 +81,35 @@ final class ImageProcessor
         $real = realpath($absolutePath) ?: $absolutePath;
         $rel = str_replace('\\', '/', substr($real, strlen($uploadDir)));
         return '/uploads' . ltrim($rel, '/');
+    }
+
+    /** Regeneriše WebP varijante za originalne upload fajlove (preskače *-sm/thumb/md/lg.webp). */
+    public static function reprocessAll(?string $dir = null): int
+    {
+        $dir = $dir ?? (string) (realpath(config('upload_dir')) ?: config('upload_dir'));
+        if (!is_dir($dir)) {
+            return 0;
+        }
+        $count = 0;
+        foreach (scandir($dir) ?: [] as $name) {
+            if ($name === '.' || $name === '..') {
+                continue;
+            }
+            $path = $dir . DIRECTORY_SEPARATOR . $name;
+            if (!is_file($path)) {
+                continue;
+            }
+            if (preg_match('/-(sm|thumb|md|lg)\.webp$/i', $name)) {
+                continue;
+            }
+            $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true)) {
+                continue;
+            }
+            if (self::process($path) !== []) {
+                $count++;
+            }
+        }
+        return $count;
     }
 }

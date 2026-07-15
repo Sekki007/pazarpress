@@ -86,3 +86,12 @@
   </fieldset>
   <button type="submit" class="admin-btn admin-btn--primary">Sačuvaj postavke</button>
 </form>
+
+<form method="post" class="admin-form" style="margin-top:1.5rem" onsubmit="return confirm('Regenerisati WebP za sve uploade? Može potrajati.')">
+  <?= csrf_field() ?>
+  <fieldset>
+    <legend>Performanse slika</legend>
+    <p class="admin-hint">Ponovo kompresuje cover slike (manji WebP za PageSpeed / LCP). Radi na postojećim uploadima.</p>
+    <button type="submit" name="reprocess_images" value="1" class="admin-btn">Regeneriši WebP varijante</button>
+  </fieldset>
+</form>

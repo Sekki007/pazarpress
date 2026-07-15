@@ -537,6 +537,12 @@ if ($uri === '/admin/postavke') {
             }
             redirect('/admin/postavke');
         }
+        if (isset($_POST['reprocess_images'])) {
+            $n = ImageProcessor::reprocessAll();
+            cache_flush_content();
+            flash('success', 'Regenerisano WebP varijanti za ' . $n . ' slika (jača kompresija).');
+            redirect('/admin/postavke');
+        }
         $current = Settings::all();
         $token = trim((string) ($_POST['facebook_page_access_token'] ?? ''));
         if ($token === '') {

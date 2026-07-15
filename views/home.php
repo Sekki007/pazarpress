@@ -32,8 +32,10 @@
             'class' => 'hero__img',
             'loading' => 'eager',
             'fetchpriority' => 'high',
-            'width' => 800,
-            'height' => 450,
+            'width' => 720,
+            'height' => 405,
+            'sizes' => '(max-width:640px) 100vw, (max-width:1024px) 70vw, 720px',
+            'src_variant' => 'md',
         ]) ?>
         <?php endif; ?>
       </div>
