@@ -1,8 +1,7 @@
-const CACHE = "pazarpress-v13";
+const CACHE = "pazarpress-v14";
 const PRECACHE = [
   "/assets/css/site.css",
   "/assets/js/site.js",
-  "/assets/js/theme.js",
   "/assets/js/reader-tools.js",
   "/assets/img/icon.svg",
   "/manifest.json",

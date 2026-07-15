@@ -4,7 +4,7 @@
 <header class="rst-topbar">
   <a href="/" class="rst-topbar__btn" aria-label="Početna">←</a>
   <h1 class="rst-topbar__title">Restorani</h1>
-  <button type="button" class="rst-topbar__btn" id="btn-theme-rst" aria-label="Tema">🌙</button>
+  <span class="rst-topbar__btn" aria-hidden="true"></span>
 </header>
 
 <div class="rst-dir-intro">

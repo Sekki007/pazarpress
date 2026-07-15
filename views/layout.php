@@ -78,7 +78,7 @@
   <link rel="stylesheet" href="/assets/css/restaurant.css">
   <?php endif; ?>
   <script>
-    (function(){try{var t=localStorage.getItem("pazarpress-theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark")}catch(e){}})();
+    try { localStorage.removeItem('pazarpress-theme'); document.documentElement.classList.remove('dark'); } catch (e) {}
   </script>
   <?php
   $analyticsProvider = Settings::get('analytics_provider');
@@ -105,7 +105,6 @@
 <?php include __DIR__ . '/partials/search-overlay.php'; ?>
 <?php include __DIR__ . '/partials/mobile-drawer.php'; ?>
 <?php include __DIR__ . '/partials/push-banner.php'; ?>
-<script src="<?= e(asset_url('assets/js/theme.js')) ?>" defer></script>
 <script src="<?= e(asset_url('assets/js/site.js')) ?>" defer></script>
 <script src="<?= e(asset_url('assets/js/reader-tools.js')) ?>" defer></script>
 <script src="<?= e(asset_url('assets/js/push-banner.js')) ?>" defer></script>

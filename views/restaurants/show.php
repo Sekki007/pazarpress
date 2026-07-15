@@ -18,7 +18,7 @@ $todayKey = $dayKeys[(int) date('w')];
 <header class="rst-topbar">
   <a href="/restorani" class="rst-topbar__btn" aria-label="Nazad">←</a>
   <h1 class="rst-topbar__title" id="rst-topbar-title" data-restaurant-name="<?= e($r['name']) ?>"><?= e($r['name']) ?></h1>
-  <button type="button" class="rst-topbar__btn" id="btn-theme-rst" aria-label="Tema">🌙</button>
+  <span class="rst-topbar__btn" aria-hidden="true"></span>
 </header>
 
 <div class="rst-screens" id="rst-screens" data-active="menu">

@@ -10,16 +10,6 @@
     ? (topbarTitle.getAttribute("data-restaurant-name") || topbarTitle.textContent).trim()
     : "";
 
-  document.getElementById("btn-theme-rst")?.addEventListener("click", function () {
-    document.documentElement.classList.toggle("dark");
-    try {
-      localStorage.setItem(
-        "sandzak-theme",
-        document.documentElement.classList.contains("dark") ? "dark" : "light"
-      );
-    } catch (e) {}
-  });
-
   function stickyOffset() {
     var sticky = document.getElementById("rst-sticky-top");
     var topbar = document.querySelector(".rst-topbar");

@@ -12,9 +12,6 @@
       <a href="/admin/clanci" class="icon-btn">← Admin</a>
       <?php endif; ?>
       <a href="/rubrika/<?= e($article['category']['slug']) ?>" class="chip"><?= e($article['category']['name']) ?></a>
-      <button type="button" class="icon-btn" id="btn-theme-article" aria-label="Tema">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
-      </button>
     </div>
   </header>
 

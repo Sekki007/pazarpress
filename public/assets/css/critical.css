@@ -1,5 +1,4 @@
 :root{--pine:#c8102e;--pine-dark:#8b0a1e;--pine-tint:#f8e8eb;--ink:#17171a;--gray:#5c5c66;--line:#e6e4e5;--paper:#f7f5f4;--card:#fff;--breaking:#c8102e;--amber:#e9a13b;--shadow:0 1px 2px rgba(23,29,27,.05),0 4px 16px rgba(23,29,27,.05);--radius:16px;--font-display:"Segoe UI",system-ui,-apple-system,sans-serif;--font-body:"Segoe UI",system-ui,-apple-system,sans-serif;--max-site:1100px;--header-h:84px;--bottom-nav-h:64px;--touch-min:42px}
-html.dark{--pine:#e85a6b;--pine-dark:#2a0a12;--pine-tint:#2a1218;--ink:#f0ebec;--gray:#a3989b;--line:#342428;--paper:#140f10;--card:#1c1416}
 *,*::before,*::after{box-sizing:border-box}
 html{overflow-x:hidden}
 body{margin:0;font:15px/1.55 var(--font-body);color:var(--ink);background:var(--paper);padding-bottom:calc(var(--bottom-nav-h)+env(safe-area-inset-bottom));max-width:100vw;overflow-x:hidden;-webkit-tap-highlight-color:transparent}

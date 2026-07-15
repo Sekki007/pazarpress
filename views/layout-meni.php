@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/restaurant.css">
   <script>
-    (function(){try{var t=localStorage.getItem("sandzak-theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark")}catch(e){}})();
+    try { localStorage.removeItem('sandzak-theme'); document.documentElement.classList.remove('dark'); } catch (e) {}
   </script>
 </head>
 <body class="rst-body">
