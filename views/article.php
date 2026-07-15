@@ -12,10 +12,6 @@
       <a href="/admin/clanci" class="icon-btn">← Admin</a>
       <?php endif; ?>
       <a href="/rubrika/<?= e($article['category']['slug']) ?>" class="chip"><?= e($article['category']['name']) ?></a>
-      <div class="article-tools" role="group" aria-label="Veličina teksta">
-        <button type="button" class="icon-btn article-tools__btn" id="btn-font-down" aria-label="Manji tekst">A−</button>
-        <button type="button" class="icon-btn article-tools__btn" id="btn-font-up" aria-label="Veći tekst">A+</button>
-      </div>
       <button type="button" class="icon-btn" id="btn-theme-article" aria-label="Tema">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
       </button>
@@ -25,6 +21,7 @@
   <div class="container article-wrap article-wrap--padded">
     <?php if (empty($preview)): include __DIR__ . '/partials/breadcrumbs.php'; endif; ?>
     <h1 class="article-title"><?= e($article['title']) ?></h1>
+    <p class="article-lead"><?= e($article['lead']) ?></p>
     <div class="article-meta">
       <span class="article-meta__pill article-meta__pill--author"><?= e($article['author']['name'] ?? $article['authorName']) ?></span>
       <span class="article-meta__pill article-meta__pill--date"><?= e(format_datetime($article['publishedAt'] ?? $article['createdAt'])) ?></span>
@@ -34,8 +31,6 @@
       <span class="article-meta__pill article-meta__pill--views"><?= e(format_view_count((int) $article['viewCount'])) ?> pregleda</span>
       <?php endif; ?>
     </div>
-    <hr class="article-head-divider">
-    <p class="article-lead"><?= e($article['lead']) ?></p>
 
     <?php
     $bodyHasSameCover = !empty($article['coverImage']) && str_contains((string) ($article['body'] ?? ''), (string) $article['coverImage']);
@@ -78,6 +73,15 @@
 
     <?php if (empty($preview)): include __DIR__ . '/partials/comments.php'; endif; ?>
   </div>
+
+  <?php if (empty($preview)): ?>
+  <div class="article-tools" role="group" aria-label="Veličina teksta">
+    <div class="article-tools__inner">
+      <button type="button" class="article-tools__btn" id="btn-font-down" aria-label="Manji tekst">A−</button>
+      <button type="button" class="article-tools__btn" id="btn-font-up" aria-label="Veći tekst">A+</button>
+    </div>
+  </div>
+  <?php endif; ?>
 
   <?php if ($related): ?>
   <section class="container related">

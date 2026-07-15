@@ -18,8 +18,9 @@
     var el = document.createElement("article");
     el.className = "news-card news-card--skeleton";
     el.innerHTML =
-      '<a class="news-card__thumb-link"><div class="skeleton skeleton--thumb"></div></a>' +
-      '<div class="news-card__body">' +
+      '<a class="news-card__thumb-link"><div class="skeleton skeleton--thumb" style="border-radius:11px"></div></a>' +
+      '<div class="news-card__body" style="padding-top:4px">' +
+      '<div class="skeleton skeleton--line"></div>' +
       '<div class="skeleton skeleton--line"></div>' +
       '<div class="skeleton skeleton--line skeleton--short"></div>' +
       "</div>";
