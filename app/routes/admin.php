@@ -137,7 +137,15 @@ if (preg_match('#^/admin/preview/([^/]+)$#', $uri, $m)) {
         http_response_code(404);
         exit('Članak nije pronađen.');
     }
-    view('article', ['title' => 'Pregled — ' . $article['title'], 'article' => $article, 'related' => [], 'preview' => true]);
+    view('article', [
+        'title' => 'Pregled — ' . $article['title'],
+        'article' => $article,
+        'related' => [],
+        'nextArticle' => null,
+        'comments' => [],
+        'preview' => true,
+        'needsSerifFont' => true,
+    ]);
     exit;
 }
 

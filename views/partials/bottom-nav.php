@@ -5,12 +5,6 @@
     </span>
     <span class="bottom-nav__label">Početna</span>
   </a>
-  <a href="/#najnovije" class="bottom-nav__item">
-    <span class="bottom-nav__icon" aria-hidden="true">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg>
-    </span>
-    <span class="bottom-nav__label">Vijesti</span>
-  </a>
   <a href="/sacuvano" class="bottom-nav__item<?= ($navActive ?? '') === 'saved' ? ' bottom-nav__item--active' : '' ?>">
     <span class="bottom-nav__icon" aria-hidden="true">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>

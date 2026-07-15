@@ -20,7 +20,21 @@
   if (!canNotify || Notification.permission !== "default" || dismissed) {
     hide();
   } else {
-    setTimeout(show, 2800);
+    setTimeout(function () {
+      if (window.scrollY < 180) return;
+      show();
+    }, 9000);
+    window.addEventListener(
+      "scroll",
+      function onScroll() {
+        if (dismissed || Notification.permission !== "default") return;
+        if (window.scrollY > 320) {
+          show();
+          window.removeEventListener("scroll", onScroll);
+        }
+      },
+      { passive: true }
+    );
   }
 
   document.getElementById("push-dismiss")?.addEventListener("click", function () {

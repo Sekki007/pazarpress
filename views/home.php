@@ -1,4 +1,3 @@
-<?php include __DIR__ . '/partials/info-strip.php'; ?>
 <?php include __DIR__ . '/partials/header.php'; ?>
 
 <?php if ($breaking): ?>
@@ -49,54 +48,18 @@
       <div class="hero__overlay">
         <span class="hero__badge">Izdvojeno</span>
         <h1 class="hero__title"><?= e($featured['title']) ?></h1>
-        <p class="hero__lead"><?= e($featured['lead']) ?></p>
         <div class="hero__meta">
-          <strong><?= e($featured['authorName']) ?></strong>
           <span><?= e(format_relative($featured['publishedAt'])) ?></span>
-          <span>· <?= (int) $featured['readingTimeMin'] ?> min čitanja</span>
+          <span>· <?= (int) $featured['readingTimeMin'] ?> min</span>
         </div>
       </div>
     </a>
     <?php endif; ?>
 
-    <?php if (!empty($flashNews)): include __DIR__ . '/partials/flash-news-grid.php'; endif; ?>
-
-    <?php if (!empty($highlights)): ?>
-    <section class="highlights-row" aria-label="Najnovije izdvojeno">
-      <div class="section-head">
-        <h2>U fokusu</h2>
-      </div>
-      <div class="highlights-row__track">
-        <?php foreach ($highlights as $i => $h): ?>
-        <a href="/vijest/<?= e($h['slug']) ?>" class="highlight-card">
-          <div class="highlight-card__media">
-            <?php if (!empty($h['coverImage'])): ?>
-            <?= responsive_image($h['coverImage'], '', [
-                'class' => 'highlight-card__img',
-                'loading' => 'lazy',
-                'sizes' => '160px',
-                'src_variant' => 'sm',
-            ]) ?>
-            <?php else: ?>
-            <span class="highlight-card__ph thumb-<?= ['a','b','c','d'][$i % 4] ?>"></span>
-            <?php endif; ?>
-          </div>
-          <span class="highlight-card__chip"><?= e($h['category']['name'] ?? '') ?></span>
-          <span class="highlight-card__title"><?= e($h['title']) ?></span>
-        </a>
-        <?php endforeach; ?>
-      </div>
-    </section>
-    <?php endif; ?>
-
-    <?php if (!empty($latestSidebar)): include __DIR__ . '/partials/latest-news-mobile.php'; endif; ?>
-
-    <?php $slot = 'ad_home_html'; include __DIR__ . '/partials/ad-slot.php'; ?>
-
     <section id="najnovije">
       <div class="section-head">
         <h2>Najnovije</h2>
-        <a href="/rubrika/vijesti">Sve vijesti →</a>
+        <a href="/rubrika/vijesti">Sve →</a>
       </div>
       <div class="news-feed-panel">
       <div id="news-feed" class="news-list news-list--feed" data-cursor="<?= e($feedCursor ?? '') ?>" data-grad="<?= e($citySlug ?? '') ?>">
@@ -108,22 +71,8 @@
       <button type="button" class="btn-load-more" id="btn-load-more">Učitaj još</button>
     </section>
 
-    <section class="mobile-extras hide-desktop" aria-label="Dodatno">
-      <?php if ($poll): ?>
-      <div class="mobile-extras__card">
-        <?php include __DIR__ . '/partials/poll-widget.php'; ?>
-      </div>
-      <?php endif; ?>
-      <div class="mobile-extras__card">
-        <h3 class="widget__title">Newsletter</h3>
-        <form class="newsletter-form" id="newsletter-form-mobile">
-          <input type="email" name="email" placeholder="Vaš email" required class="input">
-          <button type="submit" class="btn-primary">Prijavi se</button>
-        </form>
-      </div>
-    </section>
-
-    <div class="section-head"><h2>Video</h2><a href="/video">Svi prilozi →</a></div>
+    <?php if ($videos): ?>
+    <div class="section-head"><h2>Video</h2><a href="/video">Svi →</a></div>
     <div class="video-strip">
       <?php foreach ($videos as $v):
         $vThumb = youtube_thumb($v['youtubeId'] ?? null);
@@ -131,11 +80,12 @@
       <a href="<?= $v['youtubeId'] ? 'https://www.youtube.com/watch?v=' . e($v['youtubeId']) : '#' ?>" class="video-card" target="_blank" rel="noopener">
         <div class="video-card__thumb"><?php if ($vThumb): ?><img src="<?= e($vThumb) ?>" alt="" width="320" height="180" loading="lazy" decoding="async"><?php endif; ?></div>
         <span class="video-card__title"><?= e($v['title']) ?></span>
-        <?php if ($v['duration']): ?><span class="video-card__dur"><?= e($v['duration']) ?></span><?php endif; ?>
       </a>
       <?php endforeach; ?>
     </div>
+    <?php endif; ?>
 
+    <?php if ($sport): ?>
     <div class="section-head"><h2>Sport</h2><a href="/rubrika/sport">Sve →</a></div>
     <div class="news-feed-panel">
     <div class="grid-2 news-list--feed">
@@ -144,10 +94,10 @@
       <?php endforeach; ?>
     </div>
     </div>
+    <?php endif; ?>
 
-    <?php if (!empty($homeRestaurants)): include __DIR__ . '/partials/restaurants-widget.php'; endif; ?>
-
-    <div class="section-head section-head--diaspora"><h2>Dijaspora</h2><a href="/rubrika/dijaspora">Sve →</a></div>
+    <?php if ($diaspora): ?>
+    <div class="section-head"><h2>Dijaspora</h2><a href="/rubrika/dijaspora">Sve →</a></div>
     <div class="news-feed-panel">
     <div class="grid-2 news-list--feed">
       <?php foreach ($diaspora as $i => $article): ?>
@@ -155,6 +105,7 @@
       <?php endforeach; ?>
     </div>
     </div>
+    <?php endif; ?>
   </div>
 
   <aside class="sidebar hide-mobile">
@@ -163,7 +114,6 @@
     <div class="widget widget--fb">
       <?php include __DIR__ . '/partials/facebook-like-cta.php'; ?>
     </div>
-    <?php $slot = 'ad_sidebar_html'; include __DIR__ . '/partials/ad-slot.php'; ?>
     <div class="widget">
       <h3 class="widget__title">Newsletter</h3>
       <form class="newsletter-form" id="newsletter-form">

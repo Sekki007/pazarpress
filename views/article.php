@@ -68,7 +68,7 @@
     </div>
     <?php endif; ?>
 
-    <?php if (!empty($nextArticle)): ?>
+    <?php if (!empty($nextArticle) && is_array($nextArticle)): ?>
     <a href="/vijest/<?= e($nextArticle['slug']) ?>" class="next-article">
       <span class="next-article__label">Sledeća vest</span>
       <span class="next-article__title"><?= e($nextArticle['title']) ?></span>

@@ -480,25 +480,12 @@ $latestSidebar = cache_remember('home:latest-sidebar', 90, static function () us
     }
     return array_slice($items, 0, 5);
 });
-$flashNews = cache_remember(
-    'home:flash:' . ($city ?? 'all') . ':' . ($featured['slug'] ?? ''),
-    90,
-    static fn () => ArticleRepository::getFlashHighlights($city, 4, $featured['slug'] ?? null)
-);
 $sport = cache_remember('home:sport', 120, static fn () => ArticleRepository::getByCategory('sport', 4));
 $diaspora = cache_remember('home:diaspora', 120, static fn () => ArticleRepository::getByCategory('dijaspora', 4));
 $videos = cache_remember('home:videos', 300, static fn () => ArticleRepository::getLatestVideos(3));
 $poll = cache_remember('home:poll', 60, static fn () => ArticleRepository::getActivePoll());
-$infoStrip = InfoStrip::get();
-$homeRestaurants = restaurants_enabled()
-    ? cache_remember('home:restaurants:' . ($city ?? 'NOVI_PAZAR'), 180, static function () use ($city): array {
-        return RestaurantRepository::listPublished($city ?? 'NOVI_PAZAR', 6);
-    })
-    : [];
 
 $feed = array_values(array_filter($latest['items'], static fn ($a) => !$featured || $a['slug'] !== $featured['slug']));
-$highlights = array_slice($feed, 0, 3);
-$feedRest = array_slice($feed, 3);
 
 $homeCanonical = config('site_url') . '/';
 if ($citySlug) {
@@ -512,21 +499,16 @@ view('home', [
     'ogImage' => og_image_url(null),
     'preloadImage' => $featured ? lcp_image_url($featured['coverImage'] ?? null) : null,
     'preconnectYoutube' => $videos !== [],
-    'loadRestaurantCss' => restaurants_enabled() && $homeRestaurants !== [],
     'jsonLd' => build_json_ld_graph(site_seo_schemas()),
     'citySlug' => $citySlug,
     'city' => $city,
     'featured' => $featured,
     'breaking' => $breaking,
-    'flashNews' => $flashNews,
-    'highlights' => $highlights,
-    'feed' => $feedRest,
+    'feed' => $feed,
     'feedCursor' => $latest['nextCursor'],
     'latestSidebar' => $latestSidebar,
     'sport' => $sport,
     'diaspora' => $diaspora,
     'videos' => $videos,
     'poll' => $poll,
-    'infoStrip' => $infoStrip,
-    'homeRestaurants' => $homeRestaurants,
 ]);
