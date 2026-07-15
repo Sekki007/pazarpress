@@ -101,18 +101,36 @@
     form.addEventListener("submit", submitNewsletter);
   });
 
-  document.querySelectorAll(".poll-form").forEach(function (form) {
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault();
-      var optionId = new FormData(e.target).get("optionId");
+  document.addEventListener("submit", async function (e) {
+    var form = e.target && e.target.closest ? e.target.closest(".poll-form") : null;
+    if (!form) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var optionId = new FormData(form).get("optionId");
+    if (!optionId) {
+      alert("Izaberite opciju.");
+      return;
+    }
+    var btn = form.querySelector('button[type="submit"]');
+    if (btn) btn.disabled = true;
+    try {
       var res = await fetch("/api/poll/vote", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ optionId: optionId }),
       });
-      alert(res.ok ? "Hvala na glasu!" : "Već ste glasali ili greška.");
-      if (res.ok) location.reload();
-    });
+      var data = await res.json().catch(function () { return {}; });
+      if (res.ok) {
+        alert(data.message || "Hvala na glasu!");
+        location.reload();
+      } else {
+        alert(data.error || "Već ste glasali ili greška.");
+        if (btn) btn.disabled = false;
+      }
+    } catch (err) {
+      alert("Greška pri glasanju. Pokušajte ponovo.");
+      if (btn) btn.disabled = false;
+    }
   });
 
   document.querySelectorAll(".avc-faq-item .avc-faq-q").forEach(function (q) {

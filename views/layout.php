@@ -114,12 +114,12 @@
 <?php include __DIR__ . '/partials/search-overlay.php'; ?>
 <?php include __DIR__ . '/partials/mobile-drawer.php'; ?>
 <?php include __DIR__ . '/partials/push-banner.php'; ?>
-<script src="/assets/js/theme.js" defer></script>
-<script src="/assets/js/site.js" defer></script>
-<script src="/assets/js/reader-tools.js" defer></script>
-<script src="/assets/js/push-banner.js" defer></script>
+<script src="<?= e(asset_url('assets/js/theme.js')) ?>" defer></script>
+<script src="<?= e(asset_url('assets/js/site.js')) ?>" defer></script>
+<script src="<?= e(asset_url('assets/js/reader-tools.js')) ?>" defer></script>
+<script src="<?= e(asset_url('assets/js/push-banner.js')) ?>" defer></script>
 <?php if (!empty($extraScripts)): foreach ($extraScripts as $s): ?>
-<script src="<?= e($s) ?>" defer></script>
+<script src="<?= e(str_starts_with($s, '/assets/') ? asset_url(ltrim($s, '/')) : $s) ?>" defer></script>
 <?php endforeach; endif; ?>
 <?php if (!empty($jsonLd)): ?>
 <script type="application/ld+json"><?= json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?></script>
