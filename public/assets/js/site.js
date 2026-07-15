@@ -148,12 +148,18 @@
 
   var progress = document.getElementById("read-progress");
   if (progress) {
+    var ticking = false;
     window.addEventListener(
       "scroll",
       function () {
-        var h = document.documentElement;
-        var p = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
-        progress.style.width = p + "%";
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          var h = document.documentElement;
+          var max = h.scrollHeight - h.clientHeight;
+          progress.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+          ticking = false;
+        });
       },
       { passive: true }
     );

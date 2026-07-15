@@ -73,15 +73,15 @@
   <link rel="preconnect" href="https://img.youtube.com" crossorigin>
   <?php endif; ?>
   <style><?php readfile(__DIR__ . '/../public/assets/css/critical.css'); ?></style>
-  <link rel="preload" href="<?= e(asset_url('assets/css/site.css')) ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="<?= e(asset_url('assets/css/site.css')) ?>"></noscript>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="<?= e(asset_url('assets/css/site.css')) ?>">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <?php
+    $fontsHome = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;600;700&display=optional';
+    $fontsSerif = 'https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,700&display=optional';
+  ?>
+  <link rel="stylesheet" href="<?= e($fontsHome) ?>">
   <?php if (!empty($needsSerifFont)): ?>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="<?= e($fontsSerif) ?>">
   <?php endif; ?>
   <?php if (!empty($loadRestaurantCss)): ?>
   <link rel="stylesheet" href="/assets/css/restaurant.css">
