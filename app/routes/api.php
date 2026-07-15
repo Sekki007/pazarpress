@@ -85,19 +85,13 @@ if ($uri === '/api/comments' && $method === 'POST') {
 }
 
 if ($uri === '/api/articles/more' && $method === 'GET') {
-    $citySlug = isset($_GET['grad']) ? trim((string) $_GET['grad']) : '';
-    $city = $citySlug !== '' ? slug_to_city($citySlug) : null;
-    if ($citySlug !== '' && !$city) {
-        json_response(['error' => 'Nevaljan grad.'], 400);
-    }
     $cursor = $_GET['cursor'] ?? null;
-    $result = ArticleRepository::getLatest($city, $cursor, 6);
+    $result = ArticleRepository::getLatest(null, $cursor, 6);
     $items = array_map(static function (array $a): array {
         return [
             'slug' => $a['slug'],
             'title' => $a['title'],
             'category' => $a['category'],
-            'city' => $a['city'],
             'publishedAt' => $a['publishedAt'],
             'coverImage' => $a['coverImage'] ?? null,
         ];

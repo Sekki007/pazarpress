@@ -4,7 +4,6 @@
   if (!feed || !btn) return;
 
   var cursor = feed.dataset.cursor || "";
-  var grad = feed.dataset.grad || "";
   var loading = false;
   var ptr = document.getElementById("ptr-indicator");
   var ptrText = ptr ? ptr.querySelector(".ptr-indicator__text") : null;
@@ -47,7 +46,6 @@
     showSkeletons(3);
     var url = new URL("/api/articles/more", location.origin);
     url.searchParams.set("cursor", cursor);
-    if (grad) url.searchParams.set("grad", grad);
     try {
       var res = await fetch(url);
       var data = await res.json();

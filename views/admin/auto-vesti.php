@@ -352,11 +352,6 @@ $base = '/admin/auto-vesti';
           <option value="<?= e($a['id']) ?>" <?= ($cfg['default_author_id'] ?? '') === $a['id'] ? 'selected' : '' ?>><?= e($a['name']) ?></option>
           <?php endforeach; ?></select>
         </td></tr>
-        <tr><th>Grad</th><td>
-          <select name="default_city" class="admin-input"><?php foreach (CITY_LABELS as $code => $label): ?>
-          <option value="<?= e($code) ?>" <?= ($cfg['default_city'] ?? 'NOVI_PAZAR') === $code ? 'selected' : '' ?>><?= e($label) ?></option>
-          <?php endforeach; ?></select>
-        </td></tr>
       </table>
   </div>
 </div>

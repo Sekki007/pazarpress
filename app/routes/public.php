@@ -184,33 +184,22 @@ if (preg_match('#^/rubrika/([^/]+)$#', $uri, $m)) {
     if (!$category) {
         not_found('Rubrika nije pronađena');
     }
-    $citySlug = isset($_GET['grad']) ? trim((string) $_GET['grad']) : null;
-    if ($citySlug === '') {
-        $citySlug = null;
-    }
-    $city = $citySlug ? slug_to_city($citySlug) : null;
-    if ($citySlug && !$city) {
-        not_found('Grad nije pronađen');
-    }
     $page = max(1, (int) ($_GET['str'] ?? 1));
-    $data = ArticleRepository::getCategoryArticles($slug, $city, $page);
+    $data = ArticleRepository::getCategoryArticles($slug, null, $page);
     if ($page > 1 && $page > $data['pages']) {
         not_found('Stranica nije pronađena');
     }
     $infoStrip = InfoStrip::get();
     $canonical = config('site_url') . '/rubrika/' . rawurlencode($slug);
-    if ($citySlug) {
-        $canonical .= '?grad=' . rawurlencode($citySlug);
-    }
     if ($page > 1) {
-        $canonical .= ($citySlug ? '&' : '?') . 'str=' . $page;
+        $canonical .= '?str=' . $page;
     }
     $breadcrumbs = [
         ['label' => 'Početna', 'url' => '/'],
         ['label' => $category['name']],
     ];
     $basePath = '/rubrika/' . $category['slug'];
-    $queryParams = $citySlug ? ['grad' => $citySlug] : [];
+    $queryParams = [];
     view('category', [
         'title' => $category['name'] . ' — Pazar Press',
         'description' => 'Najnovije vijesti iz rubrike ' . $category['name'] . ' na Pazar Press',
@@ -218,8 +207,6 @@ if (preg_match('#^/rubrika/([^/]+)$#', $uri, $m)) {
         'category' => $category,
         'articles' => $data['items'],
         'pagination' => $data,
-        'citySlug' => $citySlug,
-        'city' => $city,
         'infoStrip' => $infoStrip,
         'breadcrumbs' => $breadcrumbs,
         'jsonLd' => build_json_ld_graph([
@@ -459,20 +446,12 @@ if ($uri !== '/') {
 }
 
 // Homepage
-$citySlug = isset($_GET['grad']) ? trim((string) $_GET['grad']) : null;
-if ($citySlug === '') {
-    $citySlug = null;
-}
-$city = $citySlug ? slug_to_city($citySlug) : null;
-if ($citySlug && !$city) {
-    not_found('Grad nije pronađen');
-}
 if (HomeFeaturedService::isEnabled()) {
     HomeFeaturedService::ensureTodayFeatured();
 }
 $featured = cache_remember('home:featured', 120, static fn () => ArticleRepository::getFeatured());
 $breaking = cache_remember('home:breaking', 60, static fn () => ArticleRepository::getBreaking());
-$latest = cache_remember('home:latest:' . ($city ?? 'all'), 90, static fn () => ArticleRepository::getLatest($city, null, 10));
+$latest = cache_remember('home:latest', 90, static fn () => ArticleRepository::getLatest(null, null, 10));
 $latestSidebar = cache_remember('home:latest-sidebar', 90, static function () use ($featured): array {
     $items = ArticleRepository::getLatest(null, null, 7)['items'];
     if ($featured) {
@@ -489,9 +468,6 @@ $infoStrip = InfoStrip::get();
 $feed = array_values(array_filter($latest['items'], static fn ($a) => !$featured || $a['slug'] !== $featured['slug']));
 
 $homeCanonical = config('site_url') . '/';
-if ($citySlug) {
-    $homeCanonical .= '?grad=' . rawurlencode($citySlug);
-}
 
 view('home', [
     'title' => 'Pazar Press — Vesti iz Novog Pazara',
@@ -501,8 +477,6 @@ view('home', [
     'preloadImage' => $featured ? lcp_image_url($featured['coverImage'] ?? null) : null,
     'preconnectYoutube' => $videos !== [],
     'jsonLd' => build_json_ld_graph(site_seo_schemas()),
-    'citySlug' => $citySlug,
-    'city' => $city,
     'featured' => $featured,
     'breaking' => $breaking,
     'feed' => $feed,

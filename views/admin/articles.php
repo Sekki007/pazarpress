@@ -8,14 +8,13 @@
   <a href="/admin/clanci?status=DRAFT" class="<?= $status === 'DRAFT' ? 'active' : '' ?>">Nacrti</a>
 </div>
 <table class="admin-table">
-  <thead><tr><th>Naslov</th><th>Rubrika</th><th>Status</th><th>Grad</th><th></th></tr></thead>
+  <thead><tr><th>Naslov</th><th>Rubrika</th><th>Status</th><th></th></tr></thead>
   <tbody>
     <?php foreach ($articles as $a): ?>
     <tr>
       <td><?= e($a['title']) ?></td>
       <td><?= e($a['categoryName']) ?></td>
       <td><?= e($a['status']) ?></td>
-      <td><?= e(city_label($a['city'])) ?></td>
       <td>
         <a href="/admin/clanci/<?= e($a['id']) ?>">Uredi</a>
         <?php if ($a['status'] === 'PUBLISHED'): ?>

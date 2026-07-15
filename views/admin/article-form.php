@@ -54,14 +54,6 @@
             <?php endforeach; ?>
           </select>
         </label>
-        <label>Grad
-          <select name="city" class="admin-input">
-            <?php foreach (CITIES_ORDER as $c): ?>
-            <option value="<?= e($c) ?>" <?= ($article['city'] ?? 'NOVI_PAZAR') === $c ? 'selected' : '' ?>><?= e(city_label($c)) ?></option>
-            <?php endforeach; ?>
-            <option value="OTHER" <?= ($article['city'] ?? '') === 'OTHER' ? 'selected' : '' ?>>Ostalo</option>
-          </select>
-        </label>
         <label>Autor
           <select name="authorId" class="admin-input" required>
             <?php foreach ($authors as $a): ?>

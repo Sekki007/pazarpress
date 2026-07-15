@@ -56,7 +56,7 @@
         <a href="/rubrika/vijesti">Sve →</a>
       </div>
       <div class="news-feed-panel">
-      <div id="news-feed" class="news-list news-list--feed" data-cursor="<?= e($feedCursor ?? '') ?>" data-grad="<?= e($citySlug ?? '') ?>">
+      <div id="news-feed" class="news-list news-list--feed" data-cursor="<?= e($feedCursor ?? '') ?>">
         <?php foreach ($feed as $i => $article): ?>
         <?php $variant = $i; include __DIR__ . '/partials/news-card.php'; ?>
         <?php endforeach; ?>

@@ -26,8 +26,6 @@ $cover = $article['coverImage'] ?? null;
     <div class="news-card__meta">
       <span class="chip"><?= e($article['category']['name'] ?? $article['categoryName'] ?? '') ?></span>
       <span class="news-card__meta-sep" aria-hidden="true">·</span>
-      <span class="news-card__meta-city"><?= e(city_label($article['city'])) ?></span>
-      <span class="news-card__meta-sep" aria-hidden="true">·</span>
       <time class="news-card__meta-time" datetime="<?= e($article['publishedAt'] ?? '') ?>"><?= e(format_relative($article['publishedAt'] ?? null)) ?></time>
     </div>
   </div>

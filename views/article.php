@@ -25,7 +25,6 @@
     <div class="article-meta">
       <span class="article-meta__pill article-meta__pill--author"><?= e($article['author']['name'] ?? $article['authorName']) ?></span>
       <span class="article-meta__pill article-meta__pill--date"><?= e(format_datetime($article['publishedAt'] ?? $article['createdAt'])) ?></span>
-      <span class="article-meta__pill article-meta__pill--city"><?= e(city_label($article['city'])) ?></span>
       <span class="article-meta__pill article-meta__pill--time"><?= (int) $article['readingTimeMin'] ?> min čitanja</span>
       <?php if (!empty($article['viewCount'])): ?>
       <span class="article-meta__pill article-meta__pill--views"><?= e(format_view_count((int) $article['viewCount'])) ?> pregleda</span>

@@ -23,14 +23,6 @@
         <?php endforeach; ?>
       </ul>
     </nav>
-    <nav class="site-footer__nav" aria-label="Gradovi">
-      <h2 class="site-footer__heading">Gradovi</h2>
-      <ul class="site-footer__links site-footer__links--grid site-footer__links--grid-2">
-        <?php foreach (site_city_nav_links() as $cityLink): ?>
-        <li><a href="<?= e($cityLink['url']) ?>"><?= e($cityLink['name']) ?></a></li>
-        <?php endforeach; ?>
-      </ul>
-    </nav>
     <nav class="site-footer__nav site-footer__nav--utility" aria-label="Korisno">
       <h2 class="site-footer__heading">Korisno</h2>
       <ul class="site-footer__links">

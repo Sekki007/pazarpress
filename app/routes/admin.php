@@ -95,7 +95,7 @@ if ($uri === '/admin/clanci/novi' || preg_match('#^/admin/clanci/([^/]+)$#', $ur
             'lead' => trim($_POST['lead'] ?? ''),
             'body' => trim($_POST['body'] ?? ''),
             'categoryId' => $_POST['categoryId'] ?? '',
-            'city' => $_POST['city'] ?? 'NOVI_PAZAR',
+            'city' => 'NOVI_PAZAR',
             'authorId' => $_POST['authorId'] ?? '',
             'status' => $_POST['status'] ?? 'DRAFT',
             'isBreaking' => isset($_POST['isBreaking']),
@@ -438,7 +438,7 @@ if ($uri === '/admin/auto-vesti') {
                 'grammar_polish_enabled' => isset($_POST['grammar_polish_enabled']),
                 'seo_layer_enabled' => isset($_POST['seo_layer_enabled']),
                 'default_author_id' => trim((string) ($_POST['default_author_id'] ?? '')),
-                'default_city' => trim((string) ($_POST['default_city'] ?? 'NOVI_PAZAR')),
+                'default_city' => 'NOVI_PAZAR',
             ]);
             flash('success', 'Auto Vesti postavke sačuvane.');
             redirect('/admin/auto-vesti?tab=settings');

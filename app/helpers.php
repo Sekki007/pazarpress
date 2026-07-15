@@ -538,8 +538,7 @@ function site_meta_description(): string
         return $tagline;
     }
     $rubrike = implode(', ', array_map(static fn (array $c): string => $c['name'], array_slice(CATEGORIES, 0, 6)));
-    $gradovi = 'Novi Pazar, Tutin, Sjenica, Prijepolje';
-    $extra = " Vijesti, {$rubrike}. Gradovi: {$gradovi}.";
+    $extra = " Vijesti iz Novog Pazara — {$rubrike}.";
     return mb_substr($tagline . $extra, 0, 158);
 }
 
@@ -567,13 +566,6 @@ function generate_llms_txt(): string
     foreach (CATEGORIES as $cat) {
         $url = $cat['slug'] === 'video' ? $base . '/video' : $base . '/rubrika/' . $cat['slug'];
         $lines[] = '- [' . $cat['name'] . '](' . $url . '): Arhiva rubrike ' . $cat['name'];
-    }
-
-    $lines[] = '';
-    $lines[] = '## Gradovi';
-
-    foreach (site_city_nav_links() as $link) {
-        $lines[] = '- [' . $link['name'] . '](' . $base . $link['url'] . '): Vijesti iz grada ' . $link['name'];
     }
 
     $lines[] = '';

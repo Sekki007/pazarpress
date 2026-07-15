@@ -5,7 +5,7 @@
         type="search"
         id="search-input"
         class="search-overlay__input"
-        placeholder="Pretraži vijesti, gradove, teme…"
+        placeholder="Pretraži vijesti i teme…"
         autocomplete="off"
       >
       <button type="button" class="icon-btn" id="search-close" aria-label="Zatvori pretragu">✕</button>
