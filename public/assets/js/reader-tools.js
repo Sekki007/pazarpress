@@ -3,7 +3,7 @@
   var HISTORY_KEY = "pazarpress-history";
   var SCROLL_KEY = "pazarpress-scroll";
   var FONT_KEY = "pazarpress-font-size";
-  var FONT_STEPS = [15, 17, 19, 21];
+  var FONT_STEPS = [16, 18, 20, 22];
 
   function getList(key) {
     try {
@@ -53,27 +53,43 @@
 
   function applyFontSize(px) {
     document.documentElement.style.setProperty("--read-size", px + "px");
+    document.querySelectorAll(".article-body").forEach(function (el) {
+      el.style.fontSize = px + "px";
+    });
     localStorage.setItem(FONT_KEY, String(px));
   }
 
   function currentFontIndex() {
-    var saved = parseInt(localStorage.getItem(FONT_KEY) || "17", 10);
+    var saved = parseInt(localStorage.getItem(FONT_KEY) || "18", 10);
     var idx = FONT_STEPS.indexOf(saved);
-    return idx === -1 ? 1 : idx;
+    if (idx !== -1) return idx;
+    var best = 0;
+    var bestDiff = Math.abs(FONT_STEPS[0] - saved);
+    for (var i = 1; i < FONT_STEPS.length; i++) {
+      var d = Math.abs(FONT_STEPS[i] - saved);
+      if (d < bestDiff) {
+        best = i;
+        bestDiff = d;
+      }
+    }
+    return best;
   }
 
-  document.getElementById("btn-font-up")?.addEventListener("click", function () {
-    var i = Math.min(FONT_STEPS.length - 1, currentFontIndex() + 1);
-    applyFontSize(FONT_STEPS[i]);
-  });
-
-  document.getElementById("btn-font-down")?.addEventListener("click", function () {
-    var i = Math.max(0, currentFontIndex() - 1);
-    applyFontSize(FONT_STEPS[i]);
-  });
-
-  if (document.querySelector(".article-body.serif")) {
-    applyFontSize(FONT_STEPS[currentFontIndex()]);
+  function bindFontButtons() {
+    var up = document.getElementById("btn-font-up");
+    var down = document.getElementById("btn-font-down");
+    if (!up && !down) return;
+    down?.addEventListener("click", function (e) {
+      e.preventDefault();
+      applyFontSize(FONT_STEPS[Math.max(0, currentFontIndex() - 1)]);
+    });
+    up?.addEventListener("click", function (e) {
+      e.preventDefault();
+      applyFontSize(FONT_STEPS[Math.min(FONT_STEPS.length - 1, currentFontIndex() + 1)]);
+    });
+    if (document.querySelector(".article-body")) {
+      applyFontSize(FONT_STEPS[currentFontIndex()]);
+    }
   }
 
   document.getElementById("btn-read-later")?.addEventListener("click", function () {
@@ -165,4 +181,5 @@
 
   trackHistory();
   updateReadLaterBtn();
+  bindFontButtons();
 })();
