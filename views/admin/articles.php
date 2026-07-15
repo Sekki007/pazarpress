@@ -23,6 +23,11 @@
         <?php else: ?>
         · <a href="/admin/preview/<?= e($a['slug']) ?>" target="_blank">Pregled</a>
         <?php endif; ?>
+        ·
+        <form method="post" action="/admin/clanci/<?= e($a['id']) ?>/delete" class="admin-inline-form" onsubmit="return confirm('Obrisati članak „<?= e($a['title']) ?>”?')">
+          <?= csrf_field() ?>
+          <button type="submit" class="admin-link-danger">Obriši</button>
+        </form>
       </td>
     </tr>
     <?php endforeach; ?>
