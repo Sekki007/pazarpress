@@ -170,10 +170,24 @@ a.chip:hover{background:var(--pine);color:#fff}
 .widget--newsletter .input{background:rgba(255,255,255,.95);border:none}
 .widget--newsletter .btn-primary{background:var(--amber);color:#1a1408}
 
-/* Iz rubrika — mockup numbered list */
-.mix-block.widget{padding:18px;margin:0}
-.mix-block__head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:4px;padding:0}
-.mix-block__title{margin:0;font:700 1.05rem/1.2 var(--font-display);display:flex;align-items:center;gap:10px}
+/* Iz rubrika — mockup numbered list (must stay column; hide-mobile sets display:flex) */
+.mix-block.widget,
+.mix-block.hide-mobile,
+.widget.mix-block.hide-mobile{
+  display:block!important;
+  padding:18px;
+  margin:0;
+  flex-direction:unset;
+}
+.mix-block__head{
+  display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+  margin:0 0 10px;padding:0 0 10px;border-bottom:1px solid var(--line);
+}
+.mix-block__title{
+  margin:0;font:700 1.05rem/1.2 var(--font-display);
+  display:flex;align-items:center;gap:10px;
+  writing-mode:horizontal-tb;text-orientation:mixed;
+}
 .mix-block__title::before{content:"";width:5px;height:18px;background:var(--amber);border-radius:3px;flex-shrink:0}
 .mix-list{list-style:none;margin:0;padding:0}
 .mix-list__item{border-bottom:1px solid var(--line)}
