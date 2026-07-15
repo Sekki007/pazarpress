@@ -115,26 +115,22 @@ if ($uri === '/newsletter/potvrdi') {
 if ($uri === '/pretraga') {
     $q = trim((string) ($_GET['q'] ?? ''));
     $results = $q !== '' ? ArticleRepository::search($q) : [];
-    $infoStrip = InfoStrip::get();
     view('search', [
         'title' => $q ? 'Pretraga: ' . $q . ' — Pazar Press' : 'Pretraga — Pazar Press',
         'description' => 'Rezultati pretrage vijesti na Pazar Press',
         'noindex' => true,
         'q' => $q,
         'results' => $results,
-        'infoStrip' => $infoStrip,
     ]);
     exit;
 }
 
 if ($uri === '/sacuvano') {
-    $infoStrip = InfoStrip::get();
     view('sacuvano', [
         'title' => 'Sačuvano — Pazar Press',
         'description' => 'Sačuvane vijesti i istorija čitanja na Pazar Press.',
         'noindex' => true,
         'canonical' => config('site_url') . '/sacuvano',
-        'infoStrip' => $infoStrip,
         'navActive' => 'saved',
     ]);
     exit;
@@ -146,7 +142,6 @@ if ($uri === '/video') {
     if ($page > 1 && $page > $data['pages']) {
         not_found('Stranica nije pronađena');
     }
-    $infoStrip = InfoStrip::get();
     $basePath = '/video';
     $canonical = config('site_url') . '/video' . ($page > 1 ? '?str=' . $page : '');
     view('video', [
@@ -156,7 +151,6 @@ if ($uri === '/video') {
         'preconnectYoutube' => true,
         'videos' => $data['items'],
         'pagination' => $data,
-        'infoStrip' => $infoStrip,
         'breadcrumbs' => [
             ['label' => 'Početna', 'url' => '/'],
             ['label' => 'Video'],
@@ -189,7 +183,6 @@ if (preg_match('#^/rubrika/([^/]+)$#', $uri, $m)) {
     if ($page > 1 && $page > $data['pages']) {
         not_found('Stranica nije pronađena');
     }
-    $infoStrip = InfoStrip::get();
     $canonical = config('site_url') . '/rubrika/' . rawurlencode($slug);
     if ($page > 1) {
         $canonical .= '?str=' . $page;
@@ -207,7 +200,6 @@ if (preg_match('#^/rubrika/([^/]+)$#', $uri, $m)) {
         'category' => $category,
         'articles' => $data['items'],
         'pagination' => $data,
-        'infoStrip' => $infoStrip,
         'breadcrumbs' => $breadcrumbs,
         'jsonLd' => build_json_ld_graph([
             [
@@ -234,7 +226,6 @@ if (preg_match('#^/tag/([^/]+)$#', $uri, $m)) {
     if ($page > 1 && $page > $data['pages']) {
         not_found('Stranica nije pronađena');
     }
-    $infoStrip = InfoStrip::get();
     $canonical = config('site_url') . '/tag/' . rawurlencode($slug) . ($page > 1 ? '?str=' . $page : '');
     $breadcrumbs = [
         ['label' => 'Početna', 'url' => '/'],
@@ -248,7 +239,6 @@ if (preg_match('#^/tag/([^/]+)$#', $uri, $m)) {
         'tag' => $tag,
         'articles' => $data['items'],
         'pagination' => $data,
-        'infoStrip' => $infoStrip,
         'breadcrumbs' => $breadcrumbs,
         'jsonLd' => build_json_ld_graph([
             [
@@ -464,7 +454,6 @@ $sport = cache_remember('home:sport', 120, static fn () => ArticleRepository::ge
 $diaspora = cache_remember('home:diaspora', 120, static fn () => ArticleRepository::getByCategory('dijaspora', 4));
 $videos = cache_remember('home:videos', 300, static fn () => ArticleRepository::getLatestVideos(3));
 $poll = cache_remember('home:poll', 60, static fn () => ArticleRepository::getActivePoll());
-$infoStrip = InfoStrip::get();
 
 $feed = array_values(array_filter($latest['items'], static fn ($a) => !$featured || $a['slug'] !== $featured['slug']));
 
@@ -489,5 +478,4 @@ view('home', [
     'diaspora' => $diaspora,
     'videos' => $videos,
     'poll' => $poll,
-    'infoStrip' => $infoStrip,
 ]);

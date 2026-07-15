@@ -5,11 +5,6 @@ declare(strict_types=1);
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/', '/') ?: '/';
 
-if ($uri === '/api/vaktija' && $method === 'GET') {
-    $data = InfoStrip::get();
-    json_response(['prayers' => [], 'nextName' => $data['vaktija']['nextName'], 'nextTime' => $data['vaktija']['nextTime']]);
-}
-
 if ($uri === '/api/newsletter' && $method === 'POST') {
     if (!RateLimiter::hit(RateLimiter::clientKey('newsletter'), 5, 3600)) {
         json_response(['error' => 'Previše pokušaja. Pokušajte kasnije.'], 429);

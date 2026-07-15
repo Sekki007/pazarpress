@@ -1,4 +1,3 @@
-<?php include __DIR__ . '/partials/info-strip.php'; ?>
 <?php include __DIR__ . '/partials/header.php'; ?>
 
 <main class="container video-page">
