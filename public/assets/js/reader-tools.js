@@ -26,12 +26,16 @@
       return x.slug === slug;
     });
     btn.classList.toggle("is-saved", saved);
-    var star = btn.querySelector(".share-bar__icon--star");
-    if (star) star.textContent = saved ? "★" : "☆";
+    var star = btn.querySelector(".share-bar__star");
+    if (star) {
+      if (saved) star.setAttribute("fill", "currentColor");
+      else star.setAttribute("fill", "none");
+    }
     var label = btn.querySelector(".share-bar__later-text");
     if (label) label.textContent = saved ? "Sačuvano" : "Za kasnije";
     btn.setAttribute("aria-pressed", saved ? "true" : "false");
     btn.setAttribute("aria-label", saved ? "Ukloni sa liste za kasnije" : "Sačuvaj za kasnije");
+    btn.title = saved ? "Sačuvano" : "Za kasnije";
   }
 
   function trackHistory() {
@@ -100,12 +104,13 @@
       var btn = document.getElementById("btn-copy-link");
       if (!btn) return;
       btn.classList.add("is-copied");
-      var label = btn.querySelector("span:last-child");
-      var old = label ? label.textContent : "";
-      if (label) label.textContent = "Kopirano!";
+      var oldTitle = btn.getAttribute("title") || "Kopiraj link";
+      btn.setAttribute("title", "Kopirano!");
+      btn.setAttribute("aria-label", "Kopirano!");
       setTimeout(function () {
         btn.classList.remove("is-copied");
-        if (label) label.textContent = old;
+        btn.setAttribute("title", oldTitle);
+        btn.setAttribute("aria-label", "Kopiraj link");
       }, 1500);
     };
     if (navigator.clipboard?.writeText) {

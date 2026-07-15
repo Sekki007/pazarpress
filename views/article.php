@@ -74,15 +74,6 @@
     <?php if (empty($preview)): include __DIR__ . '/partials/comments.php'; endif; ?>
   </div>
 
-  <?php if (empty($preview)): ?>
-  <div class="article-tools" role="group" aria-label="Veličina teksta">
-    <div class="article-tools__inner">
-      <button type="button" class="article-tools__btn" id="btn-font-down" aria-label="Manji tekst">A−</button>
-      <button type="button" class="article-tools__btn" id="btn-font-up" aria-label="Veći tekst">A+</button>
-    </div>
-  </div>
-  <?php endif; ?>
-
   <?php if ($related): ?>
   <section class="container related">
     <h2>Povezane vijesti</h2>

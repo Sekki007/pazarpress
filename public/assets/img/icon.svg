@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#C8102E"/>
-  <text x="256" y="305" fill="#ffffff" font-family="Arial,Helvetica,sans-serif" font-size="210" font-weight="800" text-anchor="middle">P</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Pazar Press">
+  <rect width="512" height="512" rx="112" fill="#C8102E"/>
+  <text x="256" y="318" fill="#FFFFFF" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="260" font-weight="900" text-anchor="middle">P</text>
+  <rect x="168" y="360" width="176" height="14" rx="7" fill="#FFFFFF" opacity="0.92"/>
 </svg>
