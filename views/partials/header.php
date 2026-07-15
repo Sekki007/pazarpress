@@ -11,7 +11,10 @@ if (preg_match('#^/rubrika/([^/]+)$#', $path, $navMatch)) {
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
     <a href="/" class="logo" aria-label="Pazar Press">
-      <img class="logo__img" src="/assets/img/pazar-press-logo.png" alt="Pazar Press" width="240" height="80">
+      <picture>
+        <source type="image/webp" srcset="<?= e(asset_url('assets/img/pazar-press-logo.webp')) ?>">
+        <img class="logo__img" src="<?= e(asset_url('assets/img/pazar-press-logo.png')) ?>" alt="Pazar Press" width="240" height="160" decoding="async" fetchpriority="high">
+      </picture>
     </a>
     <nav class="site-nav hide-mobile">
       <a href="/" class="site-nav__link<?= $path === '/' ? ' site-nav__link--active' : '' ?>">Početna</a>

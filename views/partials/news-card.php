@@ -14,6 +14,8 @@ $cover = $article['coverImage'] ?? null;
         'loading' => 'lazy',
         'sizes' => '(max-width:640px) 72px, 110px',
         'src_variant' => 'sm',
+        'width' => 110,
+        'height' => 82,
     ]) ?>
     <?php else: ?>
     <span class="news-card__thumb <?= $thumb ?>"></span>

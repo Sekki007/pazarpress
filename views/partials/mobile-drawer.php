@@ -2,7 +2,10 @@
 <aside class="mobile-drawer" id="mobile-drawer" aria-hidden="true" aria-label="Meni" inert>
   <div class="mobile-drawer__head">
     <a href="/" class="logo" aria-label="Pazar Press">
-      <img class="logo__img" src="/assets/img/pazar-press-logo.png" alt="Pazar Press" width="180" height="48">
+      <picture>
+        <source type="image/webp" srcset="<?= e(asset_url('assets/img/pazar-press-logo.webp')) ?>">
+        <img class="logo__img" src="<?= e(asset_url('assets/img/pazar-press-logo.png')) ?>" alt="Pazar Press" width="240" height="160" decoding="async">
+      </picture>
     </a>
     <button type="button" class="icon-btn" id="drawer-close" aria-label="Zatvori meni">✕</button>
   </div>

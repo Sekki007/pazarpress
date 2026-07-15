@@ -9,7 +9,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 .container{max-width:var(--max-site);margin:0 auto;padding:0 1rem}
 .hide-mobile{display:none!important}
 .logo{display:inline-flex;align-items:center;line-height:0;justify-self:center}
-.logo__img{height:64px;width:auto;max-width:min(240px,58vw);display:block;object-fit:contain}
+.logo__img{height:64px;width:auto;max-width:min(240px,58vw);display:block;object-fit:contain;aspect-ratio:240/160}
 .site-header{position:sticky;top:0;z-index:50;background:var(--card);padding-top:env(safe-area-inset-top);box-shadow:0 1px 0 var(--line)}
 .site-header::after{content:"";display:block;height:3px;background:linear-gradient(90deg,var(--pine-dark),var(--pine),var(--pine-dark))}
 .site-header__inner{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;padding:12px 0;min-height:var(--header-h)}
