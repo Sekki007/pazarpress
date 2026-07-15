@@ -4,7 +4,7 @@
     <a href="/" class="logo" aria-label="Pazar Press">
       <picture>
         <source type="image/webp" srcset="<?= e(asset_url('assets/img/pazar-press-logo.webp')) ?>">
-        <img class="logo__img" src="<?= e(asset_url('assets/img/pazar-press-logo.png')) ?>" alt="Pazar Press" width="240" height="160" decoding="async">
+        <img class="logo__img" src="<?= e(asset_url('assets/img/pazar-press-logo.png')) ?>" alt="Pazar Press" width="96" height="64" decoding="async">
       </picture>
     </a>
     <button type="button" class="icon-btn" id="drawer-close" aria-label="Zatvori meni">✕</button>
