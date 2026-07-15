@@ -17,15 +17,6 @@
 </div>
 <?php endif; ?>
 
-<div class="city-filter">
-  <div class="container city-filter__inner">
-    <a href="/" class="city-chip<?= !$citySlug ? ' city-chip--active' : '' ?>">Svi gradovi</a>
-    <?php foreach (CITIES_ORDER as $c): ?>
-    <a href="/?grad=<?= e(city_slug($c)) ?>" class="city-chip<?= $citySlug === city_slug($c) ? ' city-chip--active' : '' ?>"><?= e(city_label($c)) ?></a>
-    <?php endforeach; ?>
-  </div>
-</div>
-
 <div class="ptr-indicator" id="ptr-indicator" aria-live="polite" hidden>
   <span class="ptr-indicator__spinner" aria-hidden="true"></span>
   <span class="ptr-indicator__text">Osveženo upravo</span>
