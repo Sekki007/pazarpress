@@ -336,6 +336,11 @@ final class AutoVestiProcessor
     /** @param array<string,mixed> $payload */
     public static function executeBackground(array $payload): void
     {
+        if (($payload['type'] ?? '') === 'manual') {
+            self::executeManualBackground($payload);
+            return;
+        }
+
         $guid = trim((string) ($payload['guid'] ?? ''));
         $mode = ($payload['mode'] ?? 'ai') === 'native' ? 'native' : 'ai';
         $chatId = (string) ($payload['chat_id'] ?? '');
@@ -382,9 +387,81 @@ final class AutoVestiProcessor
         AutoVestiBackground::finish($jobKey, $success);
     }
 
+    /** @param array<string, mixed> $payload */
+    private static function executeManualBackground(array $payload): void
+    {
+        $chatId = (string) ($payload['chat_id'] ?? '');
+        $catName = (string) ($payload['cat_name'] ?? '');
+        $useAi = !empty($payload['use_ai']);
+        $guid = trim((string) ($payload['guid'] ?? ''));
+        if ($guid === '') {
+            $guid = 'manual_' . md5(microtime(true) . '|' . substr((string) ($payload['text'] ?? ''), 0, 80));
+        }
+        $mode = $useAi ? 'manual_ai' : 'manual_native';
+
+        $jobKey = AutoVestiBackground::tryClaim($guid, $mode);
+        if ($jobKey === null) {
+            return;
+        }
+
+        try {
+            @set_time_limit(600);
+            $result = self::publishManual(
+                (string) ($payload['text'] ?? ''),
+                (string) ($payload['image_url'] ?? ''),
+                (string) ($payload['cat_id'] ?? ''),
+                $useAi
+            );
+
+            if (is_string($result)) {
+                if ($chatId !== '') {
+                    AutoVestiTelegram::sendText($chatId, '❌ <b>Greška:</b> ' . AutoVestiTelegram::escape($result));
+                }
+                AutoVestiBackground::finish($jobKey, false);
+                return;
+            }
+
+            if (($result['status'] ?? '') === 'NEEDS_REVIEW') {
+                $errors = isset($result['errors']) && is_array($result['errors'])
+                    ? implode('; ', array_map('strval', $result['errors']))
+                    : 'Fact lock traži ručni pregled.';
+                if ($chatId !== '') {
+                    AutoVestiTelegram::sendText(
+                        $chatId,
+                        '⚠️ <b>Potreban pregled</b> — nije objavljeno automatski.' . "\n\n" .
+                        AutoVestiTelegram::escape($errors)
+                    );
+                }
+                AutoVestiBackground::finish($jobKey, false);
+                return;
+            }
+
+            if ($chatId !== '') {
+                $catLine = $catName !== '' ? "\n📂 " . AutoVestiTelegram::escape($catName) : '';
+                AutoVestiTelegram::sendText(
+                    $chatId,
+                    '✅ <b>Objavljeno!</b>' . $catLine . "\n\n📰 " .
+                    AutoVestiTelegram::escape((string) ($result['title'] ?? '')) .
+                    "\n🔗 <a href=\"" . e((string) ($result['url'] ?? '')) . "\">Pogledaj na sajtu</a>"
+                );
+            }
+            AutoVestiBackground::finish($jobKey, true);
+        } catch (Throwable $e) {
+            AutoVestiConfig::log('Telegram manual publish fail: ' . $e->getMessage());
+            if ($chatId !== '') {
+                AutoVestiTelegram::sendText(
+                    $chatId,
+                    '❌ <b>Greška:</b> ' . AutoVestiTelegram::escape($e->getMessage() ?: 'Neočekivana greška pri objavi.')
+                );
+            }
+            AutoVestiBackground::finish($jobKey, false);
+        }
+    }
+
     /** @return array<string,mixed>|string */
     public static function publishManual(string $rawText, string $imageUrl = '', string $categoryId = '', ?bool $useAi = null): array|string
     {
+        @set_time_limit(600);
         if ($useAi === null) {
             $useAi = !empty(AutoVestiConfig::get('telegram_manual_use_ai', false));
         }

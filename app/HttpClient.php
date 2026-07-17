@@ -102,6 +102,7 @@ final class HttpClient
                 CURLOPT_POST => true,
                 CURLOPT_POSTFIELDS => $payload,
                 CURLOPT_HTTPHEADER => $hdr,
+                CURLOPT_CONNECTTIMEOUT => 15,
                 CURLOPT_TIMEOUT => $timeout,
                 CURLOPT_SSL_VERIFYPEER => true,
             ]);

@@ -560,19 +560,51 @@ final class AutoVestiTelegram
         $useAi = !empty($pending['use_ai']) && $pending['use_ai'] === '1';
         AutoVestiSession::clearPending($chatId);
 
-        self::sendText($chatId, $useAi ? '⏳ Šaljem u AI i objavljujem...' : '⏳ Objavljujem tvoj tekst...');
-
         $imageUrl = $photoFileId !== '' ? self::getFileUrl($photoFileId) : '';
-        $result = AutoVestiProcessor::publishManual($text, $imageUrl, $catId, $useAi);
+
+        // AI pipeline (rewrite + editor + grammar + SEO) traje predugo za Telegram webhook (~60s).
+        // Isti background pattern kao ✅ AI + Objavi iz reda.
+        if ($useAi) {
+            self::sendText($chatId, '⏳ Šaljem u AI i objavljujem... (obično 30–90 sek)');
+            AutoVestiBackground::dispatch([
+                'type' => 'manual',
+                'guid' => 'manual_' . md5($chatId . '|' . microtime(true) . '|' . mb_substr($text, 0, 80, 'UTF-8')),
+                'mode' => 'manual_ai',
+                'text' => $text,
+                'image_url' => $imageUrl,
+                'cat_id' => $catId,
+                'cat_name' => $catName,
+                'use_ai' => true,
+                'chat_id' => $chatId,
+                'secret' => AutoVestiConfig::get('telegram_webhook_secret', ''),
+            ]);
+            return;
+        }
+
+        self::sendText($chatId, '⏳ Objavljujem tvoj tekst...');
+        try {
+            @set_time_limit(120);
+            $result = AutoVestiProcessor::publishManual($text, $imageUrl, $catId, false);
+        } catch (Throwable $e) {
+            self::sendText($chatId, '❌ <b>Greška:</b> ' . self::escape($e->getMessage() ?: 'Neočekivana greška.'));
+            return;
+        }
         if (is_string($result)) {
             self::sendText($chatId, '❌ <b>Greška:</b> ' . self::escape($result));
+            return;
+        }
+        if (($result['status'] ?? '') === 'NEEDS_REVIEW') {
+            $errors = isset($result['errors']) && is_array($result['errors'])
+                ? implode('; ', array_map('strval', $result['errors']))
+                : 'Potreban ručni pregled.';
+            self::sendText($chatId, '⚠️ <b>Potreban pregled</b>' . "\n\n" . self::escape($errors));
             return;
         }
 
         $catLine = $catName !== '' ? "\n📂 " . self::escape($catName) : '';
         self::sendText($chatId,
-            "✅ <b>Objavljeno!</b>\n\n📰 " . self::escape($result['title']) . $catLine .
-            "\n🔗 <a href=\"" . e($result['url']) . "\">Pogledaj na sajtu</a>"
+            "✅ <b>Objavljeno!</b>\n\n📰 " . self::escape((string) ($result['title'] ?? '')) . $catLine .
+            "\n🔗 <a href=\"" . e((string) ($result['url'] ?? '')) . "\">Pogledaj na sajtu</a>"
         );
     }
 

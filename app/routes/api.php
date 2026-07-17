@@ -194,7 +194,7 @@ if ($uri === '/api/avm/process-background' && $method === 'POST') {
     require_once __DIR__ . '/../AutoVestiProcessor.php';
     require_once __DIR__ . '/../AutoVestiBackground.php';
     require_once __DIR__ . '/../AutoVestiTelegram.php';
-    @set_time_limit(300);
+    @set_time_limit(600);
     $input = json_decode((string) file_get_contents('php://input'), true);
     if (!is_array($input)) {
         json_response(['error' => 'Invalid payload'], 400);
