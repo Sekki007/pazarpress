@@ -2,12 +2,37 @@
   const textarea = document.getElementById("article-body");
   if (!textarea || typeof tinymce === "undefined") return;
 
+  function imageExtFromType(type) {
+    if (!type) return "jpg";
+    if (type.indexOf("png") !== -1) return "png";
+    if (type.indexOf("webp") !== -1) return "webp";
+    if (type.indexOf("gif") !== -1) return "gif";
+    return "jpg";
+  }
+
+  function ensureImageFilename(blob, filename) {
+    var type = (blob && blob.type) || "image/jpeg";
+    var ext = imageExtFromType(type);
+    var name = filename || (blob instanceof File && blob.name) || "slika." + ext;
+    if (!/\.(jpe?g|png|webp|gif)$/i.test(name)) {
+      name = String(name).replace(/\.[^.]+$/, "") + "." + ext;
+      if (!/\.(jpe?g|png|webp|gif)$/i.test(name)) {
+        name = "slika." + ext;
+      }
+    }
+    return name;
+  }
+
   function uploadImage(blob, filename, progress) {
     return new Promise(async function (resolve, reject) {
       try {
-        var file = blob instanceof File ? blob : new File([blob], filename || "slika.jpg", { type: blob.type || "image/jpeg" });
+        var safeName = ensureImageFilename(blob, filename);
+        var type = (blob && blob.type) || "image/jpeg";
+        var file = blob instanceof File
+          ? new File([blob], safeName, { type: blob.type || type })
+          : new File([blob], safeName, { type: type });
         var fd = new FormData();
-        fd.append("file", file, file.name);
+        fd.append("file", file, safeName);
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/admin/upload");
         xhr.upload.onprogress = function (e) {

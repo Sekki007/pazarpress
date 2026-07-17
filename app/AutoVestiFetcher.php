@@ -248,20 +248,41 @@ final class AutoVestiFetcher
         if (preg_match('/<meta[^>]+property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\']/i', $html, $m)) {
             $title = self::cleanText(html_entity_decode($m[1], ENT_QUOTES, 'UTF-8'));
         }
+        if ($title === '' && preg_match('/<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:title["\']/i', $html, $m)) {
+            $title = self::cleanText(html_entity_decode($m[1], ENT_QUOTES, 'UTF-8'));
+        }
         if ($title === '' && preg_match('/<h1[^>]*>(.*?)<\/h1>/is', $html, $m)) {
+            $title = self::cleanText(trim(strip_tags($m[1])));
+        }
+        if ($title === '' && preg_match('/<title[^>]*>(.*?)<\/title>/is', $html, $m)) {
             $title = self::cleanText(trim(strip_tags($m[1])));
         }
         if ($title === '') {
             return null;
         }
+
         $img = self::scrapeOgImageFromHtml($html, $url);
         $pub = '';
         if (preg_match('/<meta[^>]+property=["\']article:published_time["\'][^>]+content=["\']([^"\']+)["\']/i', $html, $m)) {
             $pub = $m[1];
         }
-        preg_match_all('/<p[^>]*>(.*?)<\/p>/is', $html, $pm);
-        $paras = array_filter(array_map(static fn ($p) => trim(strip_tags($p)), $pm[1]), static fn ($p) => strlen($p) > 50);
-        $content = self::cleanText(mb_substr(implode(' ', array_slice(array_values($paras), 0, 8)), 0, 1000));
+
+        $metaDesc = '';
+        if (preg_match('/<meta[^>]+property=["\']og:description["\'][^>]+content=["\']([^"\']+)["\']/i', $html, $m)) {
+            $metaDesc = self::cleanText(html_entity_decode($m[1], ENT_QUOTES, 'UTF-8'));
+        } elseif (preg_match('/<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:description["\']/i', $html, $m)) {
+            $metaDesc = self::cleanText(html_entity_decode($m[1], ENT_QUOTES, 'UTF-8'));
+        } elseif (preg_match('/<meta[^>]+name=["\']description["\'][^>]+content=["\']([^"\']+)["\']/i', $html, $m)) {
+            $metaDesc = self::cleanText(html_entity_decode($m[1], ENT_QUOTES, 'UTF-8'));
+        }
+
+        $content = self::extractArticleBody($html);
+        if ($content === '' && $metaDesc !== '') {
+            $content = $metaDesc;
+        } elseif ($metaDesc !== '' && mb_strlen($content, 'UTF-8') < 80 && mb_strlen($metaDesc, 'UTF-8') > mb_strlen($content, 'UTF-8')) {
+            $content = $metaDesc . ' ' . $content;
+        }
+
         $row = [
             'guid' => md5($url),
             'title' => $title,
@@ -274,6 +295,64 @@ final class AutoVestiFetcher
         ];
         AutoVestiVideo::apply($row, AutoVestiVideo::extract($html));
         return $row;
+    }
+
+    /** Izvlači tekst članka iz HTML-a (paragraphs, article/main, content klase). */
+    private static function extractArticleBody(string $html): string
+    {
+        $work = preg_replace('@<script[^>]*?>.*?</script>@si', '', $html) ?? $html;
+        $work = preg_replace('@<style[^>]*?>.*?</style>@si', '', $work) ?? $work;
+        $work = preg_replace('@<(nav|footer|aside|header)[^>]*?>.*?</\1>@si', '', $work) ?? $work;
+
+        $best = '';
+        $classes = [
+            'entry-content', 'post-content', 'article-content', 'article-body', 'td-post-content',
+            'tdb-block-inner', 'post-body', 'news-content', 'single-content', 'content-inner',
+            'post-entry', 'article-text', 'story-body', 'entry__content', 'c-entry-content',
+        ];
+        foreach ($classes as $cls) {
+            if (preg_match('@<(?:div|section|article)[^>]+class=["\'][^"\']*' . preg_quote($cls, '@') . '[^"\']*["\'][^>]*>(.*?)</(?:div|section|article)>@si', $work, $m)) {
+                $text = self::paragraphsFromHtml($m[1]);
+                if (mb_strlen($text, 'UTF-8') > mb_strlen($best, 'UTF-8')) {
+                    $best = $text;
+                }
+            }
+        }
+        foreach (['article', 'main'] as $tag) {
+            if (preg_match('@<' . $tag . '[^>]*>(.*?)</' . $tag . '>@si', $work, $m)) {
+                $text = self::paragraphsFromHtml($m[1]);
+                if (mb_strlen($text, 'UTF-8') > mb_strlen($best, 'UTF-8')) {
+                    $best = $text;
+                }
+            }
+        }
+
+        $fallback = self::paragraphsFromHtml($work);
+        if (mb_strlen($fallback, 'UTF-8') > mb_strlen($best, 'UTF-8')) {
+            $best = $fallback;
+        }
+
+        return self::cleanText(mb_substr($best, 0, 3000, 'UTF-8'));
+    }
+
+    private static function paragraphsFromHtml(string $html): string
+    {
+        preg_match_all('/<(?:p|h2|h3|li|blockquote)[^>]*>(.*?)<\/(?:p|h2|h3|li|blockquote)>/is', $html, $pm);
+        $paras = [];
+        foreach ($pm[1] as $p) {
+            $p = trim(strip_tags($p));
+            $p = html_entity_decode($p, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $p = trim(preg_replace('/\s+/u', ' ', $p) ?? '');
+            if (mb_strlen($p, 'UTF-8') >= 30) {
+                $paras[] = $p;
+            }
+        }
+        if (!$paras) {
+            $plain = trim(strip_tags($html));
+            $plain = html_entity_decode($plain, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            return trim(preg_replace('/\s+/u', ' ', $plain) ?? '');
+        }
+        return implode(' ', array_slice($paras, 0, 12));
     }
 
     /** @return array<string,mixed>|string */
@@ -292,12 +371,12 @@ final class AutoVestiFetcher
 
         $item = self::scrapeArticle($url);
         if (!is_array($item)) {
-            return 'Ne mogu preuzeti vest sa linka.';
+            return 'Ne mogu preuzeti vest sa linka (stranica ne odgovara ili blokira botove).';
         }
 
-        if (!empty(AutoVestiConfig::get('use_full_article', true)) && strlen((string) $item['description']) < 800) {
+        if (!empty(AutoVestiConfig::get('use_full_article', true)) && mb_strlen((string) $item['description'], 'UTF-8') < 800) {
             $full = self::fetchFullArticle($url);
-            if ($full && strlen($full) > strlen((string) $item['description'])) {
+            if ($full && mb_strlen($full, 'UTF-8') > mb_strlen((string) $item['description'], 'UTF-8')) {
                 $item['description'] = self::cleanText($full);
             }
         }
@@ -306,8 +385,8 @@ final class AutoVestiFetcher
         }
 
         $desc = trim(strip_tags((string) ($item['description'] ?? '')));
-        if (mb_strlen($desc, 'UTF-8') < 80) {
-            return 'Tekst vesti je previše kratak ili stranica blokira preuzimanje.';
+        if (mb_strlen($desc, 'UTF-8') < 40) {
+            return 'Tekst vesti je previše kratak ili stranica blokira preuzimanje. Probaj drugi link, ili koristi /objavi i upiši tekst ručno.';
         }
 
         $item['guid'] = md5('tglink_' . $url . '_' . time());
@@ -322,33 +401,7 @@ final class AutoVestiFetcher
         if (!$html) {
             return '';
         }
-        $html = preg_replace('@<script[^>]*?>.*?</script>@si', '', $html) ?? $html;
-        $html = preg_replace('@<style[^>]*?>.*?</style>@si', '', $html) ?? $html;
-        $classes = ['entry-content', 'post-content', 'article-content', 'article-body', 'td-post-content', 'tdb-block-inner', 'post-body', 'news-content', 'single-content', 'content-inner', 'post-entry', 'article-text'];
-        $best = '';
-        foreach ($classes as $cls) {
-            if (preg_match('@<div[^>]+class=[^>]*' . preg_quote($cls, '@') . '[^>]*>(.*?)</div>@si', $html, $m)) {
-                $text = trim(strip_tags($m[1]));
-                if (strlen($text) > strlen($best)) {
-                    $best = $text;
-                }
-            }
-        }
-        if (strlen($best) < 200) {
-            preg_match_all('@<p[^>]*>(.*?)</p>@si', $html, $pm);
-            $paras = [];
-            foreach ($pm[1] as $p) {
-                $p = trim(strip_tags($p));
-                if (strlen($p) > 40) {
-                    $paras[] = $p;
-                }
-            }
-            $fallback = implode(' ', $paras);
-            if (strlen($fallback) > strlen($best)) {
-                $best = $fallback;
-            }
-        }
-        return self::cleanText(mb_substr(trim(preg_replace('/\s+/', ' ', $best) ?? ''), 0, 3000));
+        return self::extractArticleBody($html);
     }
 
     public static function scrapeOgImage(string $url): string

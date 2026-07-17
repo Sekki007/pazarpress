@@ -22,6 +22,10 @@ final class HttpClient
                 CURLOPT_USERAGENT => $ua,
                 CURLOPT_SSL_VERIFYPEER => true,
                 CURLOPT_ENCODING => '',
+                CURLOPT_HTTPHEADER => [
+                    'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language: sr-Latn,sr,bs,hr,en;q=0.8',
+                ],
             ]);
             $body = curl_exec($ch);
             $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);

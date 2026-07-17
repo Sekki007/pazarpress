@@ -838,15 +838,19 @@ if ($uri === '/admin/restorani-recenzije') {
 if ($uri === '/admin/upload' && $method === 'POST') {
     $file = get_uploaded_image_file();
     if (!$file) {
+        $err = (int) ($_FILES['file']['error'] ?? $_FILES['files']['error'][0] ?? UPLOAD_ERR_NO_FILE);
+        if (in_array($err, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)) {
+            json_response(['error' => 'Slika je prevelika (PHP limit). Pokušajte manji fajl ili JPG.'], 400);
+        }
         json_response(['error' => 'Upload nije uspio.'], 400);
     }
-    if (!is_valid_upload_image($file) || $file['size'] > config('upload_max_bytes')) {
+    if ($file['size'] > config('upload_max_bytes')) {
+        json_response(['error' => 'Slika je prevelika (max 5 MB). PNG često bude veći — kompresujte ili koristite JPG.'], 400);
+    }
+    if (!is_valid_upload_image($file)) {
         json_response(['error' => 'Dozvoljene su samo slike (JPG, PNG, WebP, GIF) do 5 MB.'], 400);
     }
-    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION) ?: 'jpg');
-    if ($ext === 'jpeg') {
-        $ext = 'jpg';
-    }
+    $ext = resolve_upload_image_ext($file);
     $name = time() . '-' . bin2hex(random_bytes(4)) . '.' . $ext;
     $dest = config('upload_dir') . '/' . $name;
     if (!move_uploaded_file($file['tmp_name'], $dest)) {

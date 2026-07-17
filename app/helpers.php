@@ -840,23 +840,90 @@ function verify_csrf(): void
     }
 }
 
+/** Detektuje tip slike iz magic bytes. Vraća jpg|png|webp|gif ili null. */
+function detect_image_ext_from_file(string $path): ?string
+{
+    if (!is_file($path) || !is_readable($path)) {
+        return null;
+    }
+    $fh = @fopen($path, 'rb');
+    if (!$fh) {
+        return null;
+    }
+    $head = (string) fread($fh, 16);
+    fclose($fh);
+    if (str_starts_with($head, "\x89PNG\r\n\x1a\n")) {
+        return 'png';
+    }
+    if (str_starts_with($head, "\xFF\xD8\xFF")) {
+        return 'jpg';
+    }
+    if (str_starts_with($head, 'GIF87a') || str_starts_with($head, 'GIF89a')) {
+        return 'gif';
+    }
+    if (str_starts_with($head, 'RIFF') && substr($head, 8, 4) === 'WEBP') {
+        return 'webp';
+    }
+    return null;
+}
+
 function is_valid_upload_image(array $file): bool
 {
+    $tmp = (string) ($file['tmp_name'] ?? '');
     $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
-    $allowedExt = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    if ($ext === 'jpeg') {
+        $ext = 'jpg';
+    }
+    $allowedExt = ['jpg', 'png', 'webp', 'gif'];
+    $allowedMime = [
+        'image/jpeg',
+        'image/png',
+        'image/x-png',
+        'image/webp',
+        'image/gif',
+        'image/pjpeg',
+    ];
+
+    $magicExt = $tmp !== '' ? detect_image_ext_from_file($tmp) : null;
+    if ($magicExt !== null) {
+        // Pravi fajl slike — dozvoli i kada je ekstenzija prazna (TinyMCE/clipboard)
+        if ($ext === '' || in_array($ext, $allowedExt, true)) {
+            return true;
+        }
+        // Ekstenzija ne odgovara sadržaju (npr. .txt sa PNG) — odbij
+        return false;
+    }
+
     if (!in_array($ext, $allowedExt, true)) {
         return false;
     }
-    $allowedMime = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (function_exists('finfo_open')) {
+    if (function_exists('finfo_open') && $tmp !== '') {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
+        $mime = $finfo ? (string) finfo_file($finfo, $tmp) : '';
+        if ($finfo) {
+            finfo_close($finfo);
+        }
         if (in_array($mime, $allowedMime, true)) {
             return true;
         }
     }
     // Windows često šalje application/octet-stream — prihvati ako je ekstenzija OK
-    return in_array($file['type'] ?? '', $allowedMime, true)
-        || ($file['type'] ?? '') === 'application/octet-stream';
+    $clientType = (string) ($file['type'] ?? '');
+    return in_array($clientType, $allowedMime, true)
+        || $clientType === 'application/octet-stream';
+}
+
+/** Ekstenzija za snimanje uploada (preferira magic bytes). */
+function resolve_upload_image_ext(array $file): string
+{
+    $tmp = (string) ($file['tmp_name'] ?? '');
+    $magic = $tmp !== '' ? detect_image_ext_from_file($tmp) : null;
+    if ($magic !== null) {
+        return $magic;
+    }
+    $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION) ?: 'jpg');
+    if ($ext === 'jpeg') {
+        $ext = 'jpg';
+    }
+    return in_array($ext, ['jpg', 'png', 'webp', 'gif'], true) ? $ext : 'jpg';
 }
