@@ -102,6 +102,7 @@
 </form>
 <?php endif; ?>
 
+<script src="/assets/js/compress-image.js"></script>
 <script src="/assets/js/admin-upload.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/tinymce@7.6.1/tinymce.min.js"></script>
 <script src="/assets/js/admin-editor.js"></script>

@@ -44,6 +44,7 @@
     </main>
   </div>
 </div>
+<script src="/assets/js/compress-image.js" defer></script>
 <script src="/assets/js/meni-owner.js" defer></script>
 </body>
 </html>

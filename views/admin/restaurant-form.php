@@ -78,4 +78,5 @@ $isNew = !$restaurant;
     <?php endif; ?>
   </div>
 </form>
+<script src="/assets/js/compress-image.js" defer></script>
 <script src="/assets/js/admin-restaurant.js" defer></script>

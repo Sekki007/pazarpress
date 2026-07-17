@@ -838,11 +838,7 @@ if ($uri === '/admin/restorani-recenzije') {
 if ($uri === '/admin/upload' && $method === 'POST') {
     $file = get_uploaded_image_file();
     if (!$file) {
-        $err = (int) ($_FILES['file']['error'] ?? $_FILES['files']['error'][0] ?? UPLOAD_ERR_NO_FILE);
-        if (in_array($err, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)) {
-            json_response(['error' => 'Slika je prevelika (PHP limit). Pokušajte manji fajl ili JPG.'], 400);
-        }
-        json_response(['error' => 'Upload nije uspio.'], 400);
+        json_response(['error' => upload_image_error_message()], 400);
     }
     if ($file['size'] > config('upload_max_bytes')) {
         json_response(['error' => 'Slika je prevelika (max 5 MB). PNG često bude veći — kompresujte ili koristite JPG.'], 400);

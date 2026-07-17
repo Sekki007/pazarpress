@@ -26,11 +26,16 @@
   function uploadImage(blob, filename, progress) {
     return new Promise(async function (resolve, reject) {
       try {
-        var safeName = ensureImageFilename(blob, filename);
         var type = (blob && blob.type) || "image/jpeg";
-        var file = blob instanceof File
-          ? new File([blob], safeName, { type: blob.type || type })
-          : new File([blob], safeName, { type: type });
+        var raw = blob instanceof File
+          ? new File([blob], ensureImageFilename(blob, filename), { type: blob.type || type })
+          : new File([blob], ensureImageFilename(blob, filename), { type: type });
+        var compress = window.compressImageForUpload || function (f) { return Promise.resolve(f); };
+        var file = await compress(raw);
+        var safeName = ensureImageFilename(file, file.name || filename);
+        if (file.name !== safeName) {
+          file = new File([file], safeName, { type: file.type || type });
+        }
         var fd = new FormData();
         fd.append("file", file, safeName);
         var xhr = new XMLHttpRequest();

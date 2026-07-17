@@ -21,11 +21,15 @@
     const file = input.files && input.files[0];
     if (!file) return;
 
-    setStatus("Uploadujem…", false);
+    setStatus("Pripremam sliku…", false);
 
     try {
+      var compress = window.compressImageForUpload || function (f) { return Promise.resolve(f); };
+      var ready = await compress(file);
+      setStatus("Uploadujem…", false);
+
       const fd = new FormData();
-      fd.append("file", file, file.name);
+      fd.append("file", ready, ready.name || file.name);
 
       const res = await fetch("/admin/upload", { method: "POST", body: fd });
       const data = await res.json();

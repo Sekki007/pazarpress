@@ -61,7 +61,10 @@ $restaurant = RestaurantRepository::getByOwnerId($user['id']);
 if ($uri === '/moj-meni/upload' && $method === 'POST') {
     verify_csrf();
     $file = get_uploaded_image_file();
-    if (!$file || $file['size'] > config('upload_max_bytes') || !is_valid_upload_image($file)) {
+    if (!$file) {
+        json_response(['error' => upload_image_error_message()], 400);
+    }
+    if ($file['size'] > config('upload_max_bytes') || !is_valid_upload_image($file)) {
         json_response(['error' => 'Nevaljana slika (JPG/PNG/WebP/GIF, max 5 MB).'], 400);
     }
     $ext = resolve_upload_image_ext($file);

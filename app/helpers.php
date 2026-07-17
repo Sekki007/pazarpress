@@ -329,6 +329,30 @@ function get_uploaded_image_file(): ?array
     return null;
 }
 
+/** Poruka za $_FILES error (npr. PHP upload_max_filesize). */
+function upload_image_error_message(): string
+{
+    $err = UPLOAD_ERR_NO_FILE;
+    if (isset($_FILES['file']['error'])) {
+        $err = (int) $_FILES['file']['error'];
+    } elseif (isset($_FILES['files']['error'][0])) {
+        $err = (int) $_FILES['files']['error'][0];
+    }
+
+    $uploadLimit = (string) ini_get('upload_max_filesize');
+    $postLimit = (string) ini_get('post_max_size');
+
+    return match ($err) {
+        UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE =>
+            "Slika je prevelika za PHP limit na serveru (upload_max_filesize={$uploadLimit}, post_max_size={$postLimit}). "
+            . 'Aplikacija dozvoljava do 5 MB — podignite PHP limit ili koristite manji JPG.',
+        UPLOAD_ERR_PARTIAL => 'Upload je prekinut. Pokušajte ponovo.',
+        UPLOAD_ERR_NO_FILE => 'Nije odabrana slika.',
+        UPLOAD_ERR_NO_TMP_DIR, UPLOAD_ERR_CANT_WRITE => 'Server ne može snimiti privremeni fajl.',
+        default => 'Upload nije uspio.',
+    };
+}
+
 function format_view_count(int $count): string
 {
     if ($count >= 1000) {

@@ -9,10 +9,12 @@
       var targetName = input.getAttribute("data-target");
       var field = document.querySelector('input[name="' + targetName + '"]');
       if (!field) return;
-      var fd = new FormData();
-      fd.append("file", file);
       input.disabled = true;
       try {
+        var compress = window.compressImageForUpload || function (f) { return Promise.resolve(f); };
+        var ready = await compress(file);
+        var fd = new FormData();
+        fd.append("file", ready, ready.name || file.name);
         var res = await fetch("/admin/upload", { method: "POST", body: fd });
         var data = await res.json();
         if (data.url) {
