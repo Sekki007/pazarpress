@@ -92,7 +92,8 @@ final class AutoVestiDuplicate
             $jaccard = $union > 0 ? (int) round(($shared / $union) * 100) : 0;
             $score = max($score, $jaccard);
 
-            if ($shared >= self::KEYWORD_MIN_SHARED) {
+            // Samo sadržajne riječi — lokacije/desk ne smiju same dići prag
+            if ($shared >= self::KEYWORD_MIN_SHARED && $jaccard >= 35) {
                 $score = max($score, 75);
             }
 
@@ -215,22 +216,54 @@ final class AutoVestiDuplicate
 
     private static function normalizeTitle(string $t): string
     {
-        $stop = [
+        $map = ['š' => 's', 'đ' => 'd', 'č' => 'c', 'ć' => 'c', 'ž' => 'z'];
+        $t = strtr(mb_strtolower($t, 'UTF-8'), $map);
+
+        foreach (self::locationPhrases() as $phrase) {
+            $t = str_replace($phrase, ' ', $t);
+        }
+
+        $words = preg_split('/\s+/', preg_replace('/[^\w\s]/u', '', $t) ?? '') ?: [];
+        $filtered = array_filter($words, static fn ($w) => mb_strlen($w) > 2 && !in_array($w, self::stopWords(), true));
+
+        return implode(' ', array_values($filtered));
+    }
+
+    /** @return list<string> */
+    private static function locationPhrases(): array
+    {
+        return [
+            'novi pazar', 'novi sad', 'nova varos', 'bosna i hercegovina', 'crna gora',
+            'sandzak', 'beograd', 'sjenica', 'tutin', 'prijepolje', 'priboj', 'raska',
+            'srbija', 'hrvatska', 'region', 'radio televizija novi pazar', 'radio televizija',
+        ];
+    }
+
+    /** @return list<string> */
+    private static function stopWords(): array
+    {
+        return [
             'u', 'i', 'je', 'na', 'se', 'su', 'za', 'da', 'od', 'do', 'iz', 'sa', 'po', 'o', 'a', 'ne',
             'ali', 'ili', 'te', 'ni', 'niti', 'kao', 'jos', 'vec', 'tek', 'li', 'bi', 'ce', 'cu',
             'ovo', 'ova', 'ovaj', 'taj', 'ta', 'to', 'koji', 'koja', 'koje', 'ovde', 'tamo', 'godina', 'godine',
             'the', 'in', 'of', 'to', 'is', 'and', 'for', 'with', 'that', 'this', 'from',
             'video', 'foto', 'galeri', 'galerija',
-            // Česti lokalni desk — ne smiju sami po sebi dići skor duplikata
-            'novom', 'pazaru', 'pazara', 'sandzak', 'sandzaku', 'sandzaka', 'sjenica', 'sjenici', 'sjenice',
-            'tutin', 'tutinu', 'prijepolju', 'prijepolja', 'priboj', 'priboju', 'raski', 'raske', 'raska',
-            'beograd', 'beogradu', 'srbija', 'srbiji', 'grad', 'gradu', 'opstina', 'opstini',
+            // Lokacije i desk prefiksi — ne smiju sami dići skor duplikata
+            'novi', 'pazar', 'novog', 'novom', 'novim', 'pazara', 'pazaru', 'pazarem',
+            'sandzak', 'sandzaka', 'sandzaku', 'sandzakom',
+            'sjenica', 'sjenici', 'sjenice', 'sjenicom',
+            'tutin', 'tutina', 'tutinu', 'tutinom',
+            'prijepolje', 'prijepolju', 'prijepolja',
+            'priboj', 'priboju', 'priboja',
+            'raska', 'raske', 'raski', 'raskom',
+            'beograd', 'beogradu', 'beograda',
+            'srbija', 'srbiji', 'srbije', 'srbijom',
+            'grad', 'gradu', 'grada', 'gradom',
+            'opstina', 'opstini', 'opstine', 'opstinom',
+            'region', 'regionu',
+            // Medijski sufiksi u naslovu
+            'radio', 'televizija', 'rtv', 'rtnp',
         ];
-        $map = ['š' => 's', 'đ' => 'd', 'č' => 'c', 'ć' => 'c', 'ž' => 'z'];
-        $t = strtr(mb_strtolower($t, 'UTF-8'), $map);
-        $words = preg_split('/\s+/', preg_replace('/[^\w\s]/u', '', $t) ?? '') ?: [];
-        $filtered = array_filter($words, static fn ($w) => mb_strlen($w) > 2 && !in_array($w, $stop, true));
-        return implode(' ', array_values($filtered));
     }
 
     /** @return list<string> */
